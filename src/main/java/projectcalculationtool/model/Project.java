@@ -9,9 +9,8 @@ public class Project {
     private int totalHours;
     boolean isArchived;
 
-    public Project(String projectName, Date deadline) {
+    public Project(String projectName) {
         this.projectName = projectName;
-        this.deadline = deadline;
     }
 
     public void setArchived(boolean archived) {
