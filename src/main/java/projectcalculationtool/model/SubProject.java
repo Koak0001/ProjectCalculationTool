@@ -6,8 +6,8 @@ public class SubProject extends Project {
 
     private int parentProjectId;
 
-    public SubProject(String projectName, Date deadline, int parentProjectId) {
-        super(projectName, deadline);
+    public SubProject(String projectName, int parentProjectId) {
+        super(projectName);
         this.parentProjectId = parentProjectId;
     }
     public int getParentProjectId() {

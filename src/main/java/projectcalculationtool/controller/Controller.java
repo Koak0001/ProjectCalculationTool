@@ -1,5 +1,6 @@
 package projectcalculationtool.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import projectcalculationtool.model.Project;
@@ -9,11 +10,13 @@ import projectcalculationtool.model.Task;
 import projectcalculationtool.service.Service;
 
 import java.util.List;
-
+@org.springframework.stereotype.Controller
+@RequestMapping("oversigt")
 public class Controller {
+
     private final Service service;
 
-    @RequestMapping("oversigt")
+    @Autowired
     public Controller(Service service) {
         this.service = service;
     }
@@ -23,32 +26,31 @@ public class Controller {
 //    TODO log out
 
 //   View Projects
-@GetMapping("projekter")
+@GetMapping("/projekter")
 public String getAllProjects(Model model){
-    List<Project> projects = service.getProjects();
+    int userId = 1;
+    List<Project> projects = service.getProjects(userId);
     model.addAttribute("projects", projects);
     return "projekter";}
 
 //   View Project
 @GetMapping("/{projectName}")
-public String getProject(@PathVariable int projectId, @PathVariable int userId, Model model){
+public String getProject(@PathVariable int projectId, @PathVariable int userId, @PathVariable boolean isSubProject, Model model){
         List<SubProject> subProjects = service.getSubProjects(projectId);
-        List<Task> tasks = service.getTasks(projectId);
-        Role role = service.getRole(projectId, userId);
-        model.addAttribute("role", role);
-        model.addAttribute("tasks", tasks);
+        Project parent  = service.getProject(projectId, isSubProject);
+        model.addAttribute("parent", parent);
         model.addAttribute("subprojects", subProjects);
         return "projekt";
 }
 // Create project
 
-@GetMapping("nytprojekt")
+@GetMapping("/nytprojekt")
 public String showProjectForm(Model model) {
     model.addAttribute("project", new Project(""));
     return "nytprojekt";
 }
 
-    @PostMapping("nytprojekt")
+    @PostMapping("/nytprojekt")
     public String addProject(@PathVariable int projectLeadId, @ModelAttribute("project") Project project) {
         return "redirect:/projekter";
     }
