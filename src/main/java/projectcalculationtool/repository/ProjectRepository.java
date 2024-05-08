@@ -1,16 +1,16 @@
 package projectcalculationtool.repository;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Repository;
 import projectcalculationtool.model.Project;
-import projectcalculationtool.model.Role;
 import projectcalculationtool.model.SubProject;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@org.springframework.stereotype.Repository
-public class Repository {
+@Repository
+public class ProjectRepository {
     @Value("${spring.datasource.url}")
     String dbUrl;
     @Value("${spring.datasource.username}")
@@ -118,59 +118,43 @@ public Project getProject(int projectId, boolean isSubProject) {
 }
 //add Subproject:
 
-    public void addNewSubProject(Project newProject, int parentId) {
-        Connection con = null;
-        try {
-            con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
-            con.setAutoCommit(false); // Start a transaction
+    public void addNewSubProject(SubProject newProject, int parentId) {
+        String insertSubprojectSql = "INSERT INTO Subproject (SubprojectName) VALUES (?)";
+        String insertProjectSubprojectSql = "INSERT INTO Project_Subproject (ProjectID, SubprojectID) VALUES (?, ?)";
+
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+             PreparedStatement insertSubprojectStmt = con.prepareStatement(insertSubprojectSql);
+             PreparedStatement insertProjectSubprojectStmt = con.prepareStatement(insertProjectSubprojectSql)) {
 
             // Insert into Subproject table
-            String sql = "INSERT INTO Subproject (ProjectName) VALUES (?)";
-            PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            pstmt.setString(1, newProject.getProjectName());
-            pstmt.executeUpdate();
-            ResultSet rs = pstmt.getGeneratedKeys();
-            int subProjectId = -1;
-            if (rs.next()) {
-                subProjectId = rs.getInt(1);
-                newProject.setProjectId(subProjectId);
-            }
+            insertSubprojectStmt.setString(1, newProject.getProjectName());
+            insertSubprojectStmt.executeUpdate();
+
+            // Get the auto-generated subproject ID
+            int newSubProjectId = getLastInsertedId(con);
 
             // Insert into Project_Subproject table
-            if (subProjectId != -1) {
-                sql = "INSERT INTO Project_Subproject (ProjectID, SubProjectID) VALUES (?, ?)";
-                pstmt = con.prepareStatement(sql);
-                pstmt.setInt(1, parentId);
-                pstmt.setInt(2, subProjectId);
-                pstmt.executeUpdate();
-            }
+            insertProjectSubprojectStmt.setInt(1, parentId);
+            insertProjectSubprojectStmt.setInt(2, newSubProjectId);
+            insertProjectSubprojectStmt.executeUpdate();
 
-            con.commit(); // Commit the transaction
-            con.setAutoCommit(true); // Reset auto-commit mode
         } catch (SQLException e) {
             System.out.println("Error adding new subproject");
             e.printStackTrace();
-            // Rollback the transaction if an error occurs
-            try {
-                if (con != null) {
-                    con.rollback();
-                }
-            } catch (SQLException ex) {
-                System.out.println("Error rolling back transaction");
-                ex.printStackTrace();
-            }
-        } finally {
-            // Close the connection in the finally block to ensure it's always closed
-            try {
-                if (con != null) {
-                    con.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println("Error closing connection");
-                ex.printStackTrace();
-            }
         }
     }
+
+    private int getLastInsertedId(Connection con) throws SQLException {
+        try (PreparedStatement stmt = con.prepareStatement("SELECT LAST_INSERT_ID()")) {
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        throw new SQLException("Failed to retrieve last inserted ID");
+    }
+
+
 
 
 
