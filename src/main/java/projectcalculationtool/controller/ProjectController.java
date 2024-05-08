@@ -1,24 +1,27 @@
 package projectcalculationtool.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
 import projectcalculationtool.model.Project;
-import projectcalculationtool.model.Role;
 import projectcalculationtool.model.SubProject;
-import projectcalculationtool.model.Task;
-import projectcalculationtool.service.Service;
+import projectcalculationtool.service.ProjectService;
 
 import java.util.List;
-@org.springframework.stereotype.Controller
+@Controller
 @RequestMapping("oversigt")
-public class Controller {
+public class ProjectController {
 
-    private final Service service;
+    private final ProjectService projectService;
 
     @Autowired
-    public Controller(Service service) {
-        this.service = service;
+    public ProjectController(ProjectService projectService) {
+        this.projectService = projectService;
     }
 
 //    TODO index, with login option.
@@ -26,18 +29,18 @@ public class Controller {
 //    TODO log out
 
 //   View Projects
-@GetMapping("/projekter")
+@GetMapping("projekter")
 public String getAllProjects(Model model){
     int userId = 1;
-    List<Project> projects = service.getProjects(userId);
+    List<Project> projects = projectService.getProjects(userId);
     model.addAttribute("projects", projects);
     return "projekter";}
 
 //   View Project
 @GetMapping("/{projectName}")
 public String getProject(@PathVariable int projectId, @PathVariable int userId, @PathVariable boolean isSubProject, Model model){
-        List<SubProject> subProjects = service.getSubProjects(projectId);
-        Project parent  = service.getProject(projectId, isSubProject);
+        List<SubProject> subProjects = projectService.getSubProjects(projectId);
+        Project parent  = projectService.getProject(projectId, isSubProject);
         model.addAttribute("parent", parent);
         model.addAttribute("subprojects", subProjects);
         return "projekt";
