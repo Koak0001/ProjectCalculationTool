@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <h2 class="section-title">Dine Projekter:</h2>
-    <div th:each="project : ${projects}" class="item-list">
-        <h2 th:text="${project.projectName}"></h2>
-<!--        <h3 th:text="${role.roleTitle}"></h3>-->
-        <a th:href="@{'/oversigt/' + ${project.projectName}}" class="wishlist-button">View Wishlist</a>
-        <br><br>
-
-        <!--            <form th:action="@{'/wishlist/wishlists/delete/' + ${itemList.idItemList}}" method="post">-->
-        <!--                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this wishlist?')">Delete</button>-->
-        <!--            </form>-->
-    </div>
-    </div>
 </head>
 <body>
+<div th:each="project : ${projects}" class="item-list">
+    <h2 th:text="${project.projectName}"></h2>
+    <h3 th:text="${project.userRole}"></h3>
+    <a th:href="@{'/oversigt/' + ${project.projectName} + '?projectId=' + ${project.projectId} + '&userRole=' + ${project.userRole}}" class="project-button">Se projekt</a>
 
+
+    <br><br>
+
+    <!--            <form th:action="@{'/wishlist/wishlists/delete/' + ${itemList.idItemList}}" method="post">-->
+    <!--                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this wishlist?')">Delete</button>-->
+    <!--            </form>-->
+</div>
 </body>
 </html>

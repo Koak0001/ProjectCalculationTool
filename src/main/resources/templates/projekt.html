@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SubProjects</title>
+</head>
+<body>
+<div th:each="project : ${subprojects}" class="subproject-list">
+    <h2 th:text="${project.projectName}"></h2>
+    <p th:text="${project.deadline}"></p>
+    <p th:text="${project.hours}"></p>
+
+</div>
+</body>
+</html>
