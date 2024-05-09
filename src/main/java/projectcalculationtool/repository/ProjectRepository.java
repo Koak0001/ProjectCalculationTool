@@ -51,20 +51,31 @@ public List<Project> getProjects(int userId) {
     return projects;
 }
 // Get subProjects
-public List<SubProject> getSubProjects(int projectId) {
+public List<SubProject> getSubProjects(int projectId, String userRole) {
     List<SubProject> subprojects = new ArrayList<>();
     try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-        String sql = "SELECT P.SubprojectId, P.SubprojectName, P.Hours " +
-                "FROM Project_Subproject P " +
-                "WHERE projectId = ?";
+        String sql = "SELECT P.SubprojectId, P.SubprojectName, P.Hours, P.Deadline " +
+                "FROM Project_Subproject PS " +
+                "JOIN Subproject P ON PS.SubprojectId = P.SubprojectId " +
+                "WHERE PS.ProjectId = ?";
         PreparedStatement psts = con.prepareStatement(sql);
         psts.setInt(1, projectId);
         ResultSet resultSet = psts.executeQuery();
         while (resultSet.next()) {
-            int subprojectId = resultSet.getInt("subprojectId");
-            String subprojectName = resultSet.getString("subprojectName");
+            int subprojectId = resultSet.getInt("SubprojectId");
+            String subprojectName = resultSet.getString("SubprojectName");
+            int hours = resultSet.getInt("Hours");
+
             SubProject subproject = new SubProject(subprojectName, projectId);
-            subproject.setProjectId(projectId);
+            Date deadline = resultSet.getDate("Deadline");
+            subproject.setDeadline(deadline);
+
+            subproject.setProjectId(subprojectId);
+            subproject.setHours(hours);
+
+            subproject.setParentProjectId(projectId);
+            subproject.setUserRole(userRole);
+
             subprojects.add(subproject);
         }
     } catch (SQLException e) {
@@ -73,6 +84,8 @@ public List<SubProject> getSubProjects(int projectId) {
     }
     return subprojects;
 }
+
+
 
 
 //    Create Project
@@ -95,20 +108,28 @@ public void addNewProject(Project newProject) {
 }
 
 //    getProject
-public Project getProject(int projectId, boolean isSubProject) {
+public Project getProject(int projectId) {
     Project project = null;
     try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-        String tableName = isSubProject ? "SubProject" : "Project";
-        String columnName = isSubProject ? "SubProjectName" : "ProjectName";
-
-        String sql = "SELECT * FROM " + tableName + " WHERE " + (isSubProject ? "subProjectId" : "projectId") + " = ?";
+        String sql = "SELECT * FROM Project WHERE projectId = ?";
         PreparedStatement psts = con.prepareStatement(sql);
         psts.setInt(1, projectId);
         ResultSet resultSet = psts.executeQuery();
         if (resultSet.next()) {
-            String projectName = resultSet.getString(columnName);
+            String projectName = resultSet.getString("ProjectName");
             project = new Project(projectName);
             project.setProjectId(projectId);
+        } else {
+            // If project not found in Project table, check SubProject table
+            sql = "SELECT * FROM SubProject WHERE subProjectId = ?";
+            psts = con.prepareStatement(sql);
+            psts.setInt(1, projectId);
+            resultSet = psts.executeQuery();
+            if (resultSet.next()) {
+                String projectName = resultSet.getString("SubProjectName");
+                project = new Project(projectName);
+                project.setProjectId(projectId);
+            }
         }
     } catch (SQLException e) {
         System.out.println("Project not located");
@@ -116,6 +137,7 @@ public Project getProject(int projectId, boolean isSubProject) {
     }
     return project;
 }
+
 //add Subproject:
 
     public void addNewSubProject(SubProject newProject, int parentId) {
@@ -126,14 +148,14 @@ public Project getProject(int projectId, boolean isSubProject) {
              PreparedStatement insertSubprojectStmt = con.prepareStatement(insertSubprojectSql);
              PreparedStatement insertProjectSubprojectStmt = con.prepareStatement(insertProjectSubprojectSql)) {
 
-            // Insert into Subproject table
+            // Insert into Subproject
             insertSubprojectStmt.setString(1, newProject.getProjectName());
             insertSubprojectStmt.executeUpdate();
 
-            // Get the auto-generated subproject ID
+            // Get subproject ID
             int newSubProjectId = getLastInsertedId(con);
 
-            // Insert into Project_Subproject table
+            // Insert into Project_Subproject
             insertProjectSubprojectStmt.setInt(1, parentId);
             insertProjectSubprojectStmt.setInt(2, newSubProjectId);
             insertProjectSubprojectStmt.executeUpdate();

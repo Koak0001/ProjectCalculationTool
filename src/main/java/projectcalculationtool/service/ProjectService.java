@@ -23,9 +23,9 @@ public class ProjectService {
 //    Call getProjects
     public List<Project> getProjects(int userId) {return projectRepository.getProjects(userId);}
 //     Call getProject
-    public Project getProject (int projectId, boolean isSubProject) {return projectRepository.getProject(projectId, isSubProject);}
+    public Project getProject (int projectId) {return projectRepository.getProject(projectId);}
 //   Call getSubprojects
-    public List<SubProject> getSubProjects(int projectId) {return projectRepository.getSubProjects(projectId);}
+    public List<SubProject> getSubProjects(int projectId, String role) {return projectRepository.getSubProjects(projectId, role);}
 
 
 //    TODO - Call verifyUser/login

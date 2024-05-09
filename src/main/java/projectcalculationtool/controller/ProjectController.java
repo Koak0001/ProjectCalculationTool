@@ -38,13 +38,17 @@ public String getAllProjects(Model model){
 
 //   View Project
 @GetMapping("/{projectName}")
-public String getProject(@PathVariable int projectId, @PathVariable int userId, @PathVariable boolean isSubProject, Model model){
-        List<SubProject> subProjects = projectService.getSubProjects(projectId);
-        Project parent  = projectService.getProject(projectId, isSubProject);
-        model.addAttribute("parent", parent);
-        model.addAttribute("subprojects", subProjects);
-        return "projekt";
+public String getProject(@PathVariable String projectName,
+                         @RequestParam int projectId,
+                         @RequestParam String userRole,
+                         Model model){
+    List<SubProject> subProjects = projectService.getSubProjects(projectId, userRole);
+    model.addAttribute("projectName", projectName);
+    model.addAttribute("role", userRole);
+    model.addAttribute("subprojects", subProjects);
+    return "projekt";
 }
+
 // Create project
 
 @GetMapping("/nytprojekt")

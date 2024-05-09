@@ -6,8 +6,14 @@ public class Project {
     private String projectName;
     private String userRole;
     private int projectId;
+
+
+
     private Date deadline;
-    private int totalHours;
+
+
+
+    private int hours;
     boolean isArchived;
 
     public Project(String projectName) {
@@ -27,6 +33,9 @@ public class Project {
     public void setProjectId(int projectId) {
         this.projectId = projectId;
     }
+    public void setHours(int hours) {
+        this.hours = hours;
+    }
     public int getProjectId() {
         return projectId;
     }
@@ -34,9 +43,11 @@ public class Project {
     public Date getDeadline() {
         return deadline;
     }
-
-    public int getTotalHours() {
-        return totalHours;
+    public void setDeadline(Date deadline) {
+        this.deadline = deadline;
+    }
+    public int getHours() {
+        return hours;
     }
 
     public boolean isArchived() {
