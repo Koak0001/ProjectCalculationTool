@@ -3,6 +3,7 @@ package projectcalculationtool.service;
 import org.springframework.stereotype.Service;
 import projectcalculationtool.model.Project;
 import projectcalculationtool.model.SubProject;
+import projectcalculationtool.model.Task;
 import projectcalculationtool.repository.ProjectRepository;
 
 import java.util.List;
@@ -26,7 +27,8 @@ public class ProjectService {
     public Project getProject (int projectId) {return projectRepository.getProject(projectId);}
 //   Call getSubprojects
     public List<SubProject> getSubProjects(int projectId, String role) {return projectRepository.getSubProjects(projectId, role);}
-
+//    TODO - Call getTasks
+    public List<Task> getTasks(int projectId, String role) {return projectRepository.getTasks(projectId, role);}
 
 //    TODO - Call verifyUser/login
 //    TODO - Call getUserSitePermissions
@@ -36,7 +38,7 @@ public class ProjectService {
 
 //    TODO - Call getSubproject
 //    TODO - Call createTask
-//    TODO - Call getTasks
+
 //    TODO - Call getTask
 //    TODO - Call getUsers
 //    TODO - Call setRole
