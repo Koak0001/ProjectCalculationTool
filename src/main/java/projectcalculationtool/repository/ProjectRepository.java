@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import projectcalculationtool.model.Project;
 import projectcalculationtool.model.SubProject;
+import projectcalculationtool.model.Task;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -84,10 +85,6 @@ public List<SubProject> getSubProjects(int projectId, String userRole) {
     }
     return subprojects;
 }
-
-
-
-
 //    Create Project
 public void addNewProject(Project newProject) {
     try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
@@ -175,13 +172,37 @@ public Project getProject(int projectId) {
         }
         throw new SQLException("Failed to retrieve last inserted ID");
     }
-
-
-
-
-
-
 //    TODO  - getTasks
+
+    public List<Task> getTasks(int subProjectId, String userRole) {
+        List<Task> tasks = new ArrayList<>();
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String sql = "SELECT T.TaskId, T.TaskName, T.Hours " +
+                    "FROM Subproject_Task ST " +
+                    "JOIN Task T ON ST.TaskId = T.TaskId " +
+                    "WHERE ST.SubProjectId = ?";
+            PreparedStatement psts = con.prepareStatement(sql);
+            psts.setInt(1, subProjectId);
+            ResultSet resultSet = psts.executeQuery();
+            while (resultSet.next()) {
+                int taskId = resultSet.getInt("TaskId");
+                String taskName = resultSet.getString("TaskName");
+                int hours = resultSet.getInt("Hours");
+                Task task = new Task(taskName, subProjectId);
+
+                task.setTaskId(taskId);
+                task.setHours(hours);
+                task.setProjectId(subProjectId);
+                task.setRole(userRole);
+                tasks.add(task);
+            }
+        } catch (SQLException e) {
+            System.out.println("Database not connected");
+            e.printStackTrace();
+        }
+        return tasks;
+    }
+
 //    TODO  - getTask
 //    TODO  - getUsers
 //    TODO  - getHoursTask

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
 import projectcalculationtool.model.Project;
 import projectcalculationtool.model.SubProject;
+import projectcalculationtool.model.Task;
 import projectcalculationtool.service.ProjectService;
 
 import java.util.List;
@@ -36,7 +37,7 @@ public String getAllProjects(Model model){
     model.addAttribute("projects", projects);
     return "projekter";}
 
-//   View Project
+//   View Project's subprojects
 @GetMapping("/{projectName}")
 public String getProject(@PathVariable String projectName,
                          @RequestParam int projectId,
@@ -47,6 +48,19 @@ public String getProject(@PathVariable String projectName,
     model.addAttribute("role", userRole);
     model.addAttribute("subprojects", subProjects);
     return "projekt";
+}
+//    View Subproject's tasks
+@GetMapping("/{projectName}/opgaver")
+public String getSubProject(@PathVariable String projectName,
+                            @RequestParam int subProjectId,
+                            @RequestParam String userRole,
+                            Model model){
+        List<Task> tasks = projectService.getTasks(subProjectId, userRole);
+        model.addAttribute("tasks", tasks);
+        model.addAttribute("subProjectName", projectName);
+        model.addAttribute("role", userRole);
+        System.out.println(tasks.size());
+        return "opgaver";
 }
 
 // Create project
@@ -64,7 +78,7 @@ public String showProjectForm(Model model) {
 
 //    TODO Create subproject
 //    TODO Create Task
-//    TODO View task
+
 
 //    TODO Add collaborator/Set role
 //    TODO View collaborators
