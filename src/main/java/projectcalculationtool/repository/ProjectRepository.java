@@ -22,16 +22,24 @@ public class ProjectRepository {
 
 //    TODO - login/verifyUser
 //    TODO  - logout
+//    TODO  - getUsers
+//    TODO  - getHoursPerDay?
 
-    //    getProjects
     public List<Project> getProjects(int userId) {
         List<Project> projects = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String sql = "SELECT P.projectId, P.projectName, R.RoleTitle " +
+            String sql = "SELECT P.Deadline, P.projectId, P.projectName, R.RoleTitle, SUM(Temp.Total) AS TotalHours " +
                     "FROM User_Project_Role UPR " +
                     "JOIN Project P ON UPR.ProjectID = P.ProjectID " +
                     "JOIN Role R ON UPR.RoleID = R.RoleID " +
-                    "WHERE UPR.UserID = ?";
+                    "LEFT JOIN (SELECT PS.ProjectId, ST.SubProjectId, SUM(T.Hours) AS Total " +
+                    "           FROM Subproject_Task ST " +
+                    "           JOIN Task T ON ST.TaskId = T.TaskId " +
+                    "           JOIN Project_Subproject PS ON ST.SubProjectId = PS.SubProjectId " +
+                    "           GROUP BY PS.ProjectId, ST.SubProjectId) AS Temp ON P.ProjectId = Temp.ProjectId " +
+                    "WHERE UPR.UserID = ? " +
+                    "GROUP BY P.ProjectId";
+
             PreparedStatement psts = con.prepareStatement(sql);
             psts.setInt(1, userId);
             ResultSet resultSet = psts.executeQuery();
@@ -39,9 +47,15 @@ public class ProjectRepository {
                 int projectId = resultSet.getInt("projectId");
                 String projectName = resultSet.getString("projectName");
                 String roleTitle = resultSet.getString("RoleTitle");
+                int totalHours = resultSet.getInt("TotalHours");
+                Date deadline = resultSet.getDate("Deadline");
+
                 Project project = new Project(projectName);
+
+                project.setDeadline(deadline);
                 project.setProjectId(projectId);
                 project.setUserRole(roleTitle);
+                project.setHours(totalHours);
                 projects.add(project);
             }
         } catch (SQLException e) {
@@ -51,7 +65,6 @@ public class ProjectRepository {
         return projects;
     }
 
-    // Get subProjects
     public List<SubProject> getSubProjects(int projectId, String userRole) {
         List<SubProject> subprojects = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
@@ -70,16 +83,15 @@ public class ProjectRepository {
                 int subprojectId = resultSet.getInt("SubprojectId");
                 String subprojectName = resultSet.getString("SubprojectName");
                 int hours = resultSet.getInt("Hours");
+                Date deadline = resultSet.getDate("Deadline");
 
                 SubProject subproject = new SubProject(subprojectName, projectId);
 
-                Date deadline = resultSet.getDate("Deadline");
                 subproject.setDeadline(deadline);
                 subproject.setProjectId(subprojectId);
                 subproject.setHours(hours);
                 subproject.setParentProjectId(projectId);
                 subproject.setUserRole(userRole);
-
                 subprojects.add(subproject);
             }
         } catch (SQLException e) {
@@ -89,7 +101,6 @@ public class ProjectRepository {
         return subprojects;
     }
 
-    //    Create Project
     public void addNewProject(Project newProject) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
             String sql = "INSERT INTO Project (ProjectName) VALUES (?)";
@@ -108,7 +119,6 @@ public class ProjectRepository {
         }
     }
 
-    //    getProject
     public Project getProject(int projectId) {
         Project project = null;
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
@@ -139,24 +149,18 @@ public class ProjectRepository {
         return project;
     }
 
-//add Subproject:
-
     public void addNewSubProject(SubProject newProject, int parentId) {
         String insertSubprojectSql = "INSERT INTO Subproject (SubprojectName) VALUES (?)";
         String insertProjectSubprojectSql = "INSERT INTO Project_Subproject (ProjectID, SubprojectID) VALUES (?, ?)";
-
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
              PreparedStatement insertSubprojectStmt = con.prepareStatement(insertSubprojectSql);
              PreparedStatement insertProjectSubprojectStmt = con.prepareStatement(insertProjectSubprojectSql)) {
 
-            // Insert into Subproject
             insertSubprojectStmt.setString(1, newProject.getProjectName());
             insertSubprojectStmt.executeUpdate();
 
-            // Get subproject ID
             int newSubProjectId = getLastInsertedId(con);
 
-            // Insert into Project_Subproject
             insertProjectSubprojectStmt.setInt(1, parentId);
             insertProjectSubprojectStmt.setInt(2, newSubProjectId);
             insertProjectSubprojectStmt.executeUpdate();
@@ -177,7 +181,6 @@ public class ProjectRepository {
         throw new SQLException("Failed to retrieve last inserted ID");
     }
 
-    //    getTasks
     public List<Task> getTasks(int subProjectId, String userRole) {
         List<Task> tasks = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
@@ -206,7 +209,7 @@ public class ProjectRepository {
         }
         return tasks;
     }
-    //    TODO  - getTask
+
     public Task getTask(int taskId) {
         Task task = null;
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
@@ -228,9 +231,4 @@ public class ProjectRepository {
     }
         return task;
 }
-//    TODO  - getUsers
-//    TODO  - getHoursTask
-//    TODO  - getHoursSubProject
-//    TODO  - getHoursTotal
-//    TODO  - getHoursPerDay
 }
