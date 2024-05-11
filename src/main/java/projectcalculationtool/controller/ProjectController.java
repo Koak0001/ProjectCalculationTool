@@ -59,8 +59,18 @@ public String getSubProject(@PathVariable String projectName,
         model.addAttribute("tasks", tasks);
         model.addAttribute("subProjectName", projectName);
         model.addAttribute("role", userRole);
-        System.out.println(tasks.size());
+        model.addAttribute("subProjectId", subProjectId);
         return "opgaver";
+}
+@GetMapping("/{projectName}/{taskName}")
+public String getTask(@PathVariable String taskName, @RequestParam int subProjectId,
+                      @RequestParam String userRole, @RequestParam int taskId,
+                      Model model){
+        Task task = projectService.getTask(taskId);
+        model.addAttribute("task", task);
+        model.addAttribute("subProjectId", subProjectId);
+        model.addAttribute("role", userRole);
+        return "opgave";
 }
 
 // Create project

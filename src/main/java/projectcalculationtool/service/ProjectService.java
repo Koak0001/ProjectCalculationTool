@@ -27,8 +27,10 @@ public class ProjectService {
     public Project getProject (int projectId) {return projectRepository.getProject(projectId);}
 //   Call getSubprojects
     public List<SubProject> getSubProjects(int projectId, String role) {return projectRepository.getSubProjects(projectId, role);}
-//    TODO - Call getTasks
+//  Call getTasks
     public List<Task> getTasks(int projectId, String role) {return projectRepository.getTasks(projectId, role);}
+//  Call getTask
+    public Task getTask (int taskId) {return projectRepository.getTask(taskId);}
 
 //    TODO - Call verifyUser/login
 //    TODO - Call getUserSitePermissions
@@ -39,7 +41,7 @@ public class ProjectService {
 //    TODO - Call getSubproject
 //    TODO - Call createTask
 
-//    TODO - Call getTask
+
 //    TODO - Call getUsers
 //    TODO - Call setRole
 //    TODO - Call getRole

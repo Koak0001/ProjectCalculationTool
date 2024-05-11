@@ -9,9 +9,8 @@ public class Task {
     private int taskId;
     private int hours;
 
-    public Task(String taskName,int projectId) {
+    public Task(String taskName) {
         this.taskName = taskName;
-        this.projectId = projectId;
     }
 
     public String getTaskName() {
