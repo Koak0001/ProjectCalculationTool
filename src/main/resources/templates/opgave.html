@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${task.taskName}"></title>
+</head>
+<body>
+
+
+<h4 th:text="${taskName}" ></h4>
+<div class="task-details">
+    <h2 th:text="'Din rolle er ' + ${role}"></h2>
+
+    <p th:text="'Forventes afsluttet efter '+ ${task.hours}+' arbejdstimer.'"></p>
+
+</div>
+
+</body>
+
+</html>

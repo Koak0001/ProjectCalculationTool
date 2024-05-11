@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SubProjects</title>
+    <title th:text="${projectName}"></title>
 </head>
 <body>
-<h4 th:if="${subprojects.isEmpty()}" th:text="'Ingen underprojekter fundet. Opret underprojekter for projektet ' + ${projectName}"></h4>
+<h4 th:if="${subprojects.isEmpty()}" th:text="'Ingen delprojekter fundet. Opret delprojekter for projektet ' + ${projectName}"></h4>
 <div th:if="${subprojects != null}" th:each="project : ${subprojects}" class="subproject-list">
     <h2 th:text="${project.projectName}"></h2>
-    <a th:href="@{'/oversigt/' + ${project.projectName} + '/opgaver'+'?subProjectId=' + ${project.projectId} + '&userRole=' + ${project.userRole}}" class="task-button">Se underprojekt!</a>
+    <a th:href="@{'/oversigt/' + ${project.projectName} + '/opgaver'+'?subProjectId=' + ${project.projectId} + '&userRole=' + ${project.userRole}}" class="task-button">Se delprojekt!</a>
     <p th:text="${project.deadline}"></p>
     <p th:text="${project.hours}"></p>
 

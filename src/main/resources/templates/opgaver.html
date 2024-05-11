@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Opgaver</title>
+    <title th:text="${subProjectName}"></title>
 </head>
 <body>
-<h4 th:if="${tasks.isEmpty()}" th:text="'Ingen opgaver fundet. Opret opgaver for projektet ' + ${subProjectName}"></h4>
+<h3 th:if="${tasks.isEmpty()}" th:text="'Ingen opgaver fundet. Opret opgaver for projektet ' + ${subProjectName}"></h3>
 <div th:if="${tasks != null}" th:each="task : ${tasks}" class="task-list">
-    <h2 th:text="${task.taskName}"></h2>
+    <h4 th:text="${task.taskName}"></h4>
+    <a th:href="@{'/oversigt/' + ${subProjectName} + '/' + ${task.taskName} +'?subProjectId=' + ${subProjectId} + '&taskId='+ ${task.taskId} + '&userRole=' + ${role}}" class="task-button">Se opgave!</a>
+
     <p th:text="${task.hours}"></p>
 
 </div>
