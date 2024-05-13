@@ -21,6 +21,9 @@ public class ProjectService {
     public void addSubProject(SubProject subProject, int parent) {
         projectRepository.addNewSubProject(subProject, parent);}
 
+    public void addTask(Task task, int parent) {
+        projectRepository.addNewTask(task, parent);}
+
 //    Call getProjects
     public List<Project> getProjects(int userId) {return projectRepository.getProjects(userId);}
 //     Call getProject
@@ -35,11 +38,6 @@ public class ProjectService {
 //    TODO - Call verifyUser/login
 //    TODO - Call getUserSitePermissions
 //    TODO - Call createProject
-
-
-
-//    TODO - Call getSubproject
-//    TODO - Call createTask
 
 
 //    TODO - Call getUsers

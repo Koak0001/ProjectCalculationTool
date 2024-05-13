@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ny opgave</title>
+</head>
+<body>
+<h2>Tilføj en opgave til  <span th:text="${subProjectName}"></span></h2>
+
+<form method="post" th:action="@{'/oversigt/' + ${subProjectName} + '/opret_opgave'+'?parentProjectId=' +${projectId}}" th:object="${task}" >
+    <div class="form-task">
+        <label for="taskName">Opgavens titel:</label>
+        <input type="text" th:field="*{taskName}" id="taskName">
+        <br>
+        <label for="hours">Forventet arbejdstid:</label>
+        <input type="number" th:field="*{hours}" id="hours">
+    </div>
+    <button type="submit">Tilføj opgave</button>
+    <a href="/" class="btn btn-secondary">Fortryd tilføjelse</a>
+</form>
+</body>
+</html>

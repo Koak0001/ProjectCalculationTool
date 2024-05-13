@@ -102,6 +102,21 @@ public String addProject(@PathVariable int projectLeadId, @ModelAttribute("proje
         return "redirect:/oversigt/projekter";
     }
 //    TODO Create Task
+@GetMapping("/{subProjectName}/opret_opgave")
+public String showTaskForm(@RequestParam int parentProjectId, @PathVariable String subProjectName, Model model) {
+    model.addAttribute("subProjectName", subProjectName);
+    model.addAttribute("projectId", parentProjectId);
+    model.addAttribute("task", new Task(""));
+    return "opret_opgave";
+}
+
+    @PostMapping("/{subProjectName}/opret_opgave")
+    public String addTask(@ModelAttribute("task") Task task, @RequestParam int parentProjectId) {
+        projectService.addTask(task, parentProjectId);
+        return "redirect:/oversigt/projekter";
+    }
+
+//    "@{'/oversigt/' + ${subProjectName} + '/opret_opgave' +'?subProjectName=' +${subProjectName} +'&parentProjectId=' +${subProjectId}}">Tilføj opgave.</a>
 //    TODO Add collaborator/Set role
 //    TODO View collaborators
 //    TODO Edit collaborator

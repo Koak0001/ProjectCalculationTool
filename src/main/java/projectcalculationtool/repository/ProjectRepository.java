@@ -148,7 +148,30 @@ public class ProjectRepository {
         }
         return project;
     }
+    public void addNewTask(Task newTask, int parentId) {
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String insertTaskSql = "INSERT INTO Task (TaskName, Hours) VALUES (?, ?)";
+            PreparedStatement pstmt = con.prepareStatement(insertTaskSql, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, newTask.getTaskName());
+            pstmt.setInt(2, newTask.getHours());
+            pstmt.executeUpdate();
 
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                int taskId = rs.getInt(1);
+                newTask.setTaskId(taskId);
+            }
+            String junctionSql = "INSERT INTO Subproject_Task (SubprojectId, TaskId ) VALUES (?, ?)";
+            PreparedStatement junctionPstmt = con.prepareStatement(junctionSql);
+            junctionPstmt.setInt(1, parentId);
+            junctionPstmt.setInt(2, newTask.getTaskId());
+            junctionPstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println("Error adding new task");
+            e.printStackTrace();
+        }
+    }
     public void addNewSubProject(SubProject newSubProject, int parentId) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
             String insertSubprojectSql = "INSERT INTO Subproject (SubprojectName) VALUES (?)";
