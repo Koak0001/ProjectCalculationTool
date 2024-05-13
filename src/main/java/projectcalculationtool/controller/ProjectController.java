@@ -29,7 +29,7 @@ public class ProjectController {
 //    TODO index, logged in.
 //    TODO log out
 
-//   View Projects
+//   View Projects for user
 @GetMapping("projekter")
 public String getAllProjects(Model model){
     int userId = 1;
@@ -45,11 +45,12 @@ public String getProject(@PathVariable String projectName,
                          Model model){
     List<SubProject> subProjects = projectService.getSubProjects(projectId, userRole);
     model.addAttribute("projectName", projectName);
+    model.addAttribute("projectId", projectId);
     model.addAttribute("role", userRole);
     model.addAttribute("subprojects", subProjects);
     return "projekt";
 }
-//    View Subproject's tasks
+// View Subproject's tasks
 @GetMapping("/{projectName}/opgaver")
 public String getSubProject(@PathVariable String projectName,
                             @RequestParam int subProjectId,
@@ -62,34 +63,45 @@ public String getSubProject(@PathVariable String projectName,
         model.addAttribute("subProjectId", subProjectId);
         return "opgaver";
 }
+// View task
 @GetMapping("/{projectName}/{taskName}")
 public String getTask(@PathVariable String taskName, @RequestParam int subProjectId,
                       @RequestParam String userRole, @RequestParam int taskId,
                       Model model){
         Task task = projectService.getTask(taskId);
         model.addAttribute("task", task);
+        model.addAttribute("taskName", taskName);
         model.addAttribute("subProjectId", subProjectId);
         model.addAttribute("role", userRole);
         return "opgave";
 }
 
 // Create project
-
 @GetMapping("/nytprojekt")
 public String showProjectForm(Model model) {
     model.addAttribute("project", new Project(""));
     return "nytprojekt";
 }
 
-    @PostMapping("/nytprojekt")
-    public String addProject(@PathVariable int projectLeadId, @ModelAttribute("project") Project project) {
-        return "redirect:/projekter";
+@PostMapping("/nytprojekt")
+public String addProject(@PathVariable int projectLeadId, @ModelAttribute("project") Project project) {
+     return "redirect:/projekter";
+    }
+    // Create subproject
+    @GetMapping("/{projectName}/opret_delprojekt")
+    public String showSubProjectForm(@RequestParam int parentProjectId, @PathVariable String projectName, Model model) {
+        model.addAttribute("projectName", projectName);
+        model.addAttribute("projectId", parentProjectId);
+        model.addAttribute("subproject", new SubProject("", parentProjectId));
+        return "opret_delprojekt";
     }
 
-//    TODO Create subproject
+    @PostMapping("/{projectName}/opret_delprojekt")
+    public String addSubProject(@ModelAttribute("subproject") SubProject newSubProject, @RequestParam int parentProjectId) {
+        projectService.addSubProject(newSubProject, parentProjectId);
+        return "redirect:/oversigt/projekter";
+    }
 //    TODO Create Task
-
-
 //    TODO Add collaborator/Set role
 //    TODO View collaborators
 //    TODO Edit collaborator

@@ -90,7 +90,7 @@ public class ProjectRepository {
                 subproject.setDeadline(deadline);
                 subproject.setProjectId(subprojectId);
                 subproject.setHours(hours);
-                subproject.setParentProjectId(projectId);
+//                subproject.setParentProjectId(projectId);
                 subproject.setUserRole(userRole);
                 subprojects.add(subproject);
             }
@@ -131,7 +131,7 @@ public class ProjectRepository {
                 project = new Project(projectName);
                 project.setProjectId(projectId);
             } else {
-                // If project not found in Project table, check SubProject table
+                // TODO Might be redundant?
                 sql = "SELECT * FROM SubProject WHERE subProjectId = ?";
                 psts = con.prepareStatement(sql);
                 psts.setInt(1, projectId);
@@ -149,36 +149,28 @@ public class ProjectRepository {
         return project;
     }
 
-    public void addNewSubProject(SubProject newProject, int parentId) {
-        String insertSubprojectSql = "INSERT INTO Subproject (SubprojectName) VALUES (?)";
-        String insertProjectSubprojectSql = "INSERT INTO Project_Subproject (ProjectID, SubprojectID) VALUES (?, ?)";
-        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
-             PreparedStatement insertSubprojectStmt = con.prepareStatement(insertSubprojectSql);
-             PreparedStatement insertProjectSubprojectStmt = con.prepareStatement(insertProjectSubprojectSql)) {
+    public void addNewSubProject(SubProject newSubProject, int parentId) {
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String insertSubprojectSql = "INSERT INTO Subproject (SubprojectName) VALUES (?)";
+            PreparedStatement pstmt = con.prepareStatement(insertSubprojectSql, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, newSubProject.getProjectName());
+            pstmt.executeUpdate();
 
-            insertSubprojectStmt.setString(1, newProject.getProjectName());
-            insertSubprojectStmt.executeUpdate();
-
-            int newSubProjectId = getLastInsertedId(con);
-
-            insertProjectSubprojectStmt.setInt(1, parentId);
-            insertProjectSubprojectStmt.setInt(2, newSubProjectId);
-            insertProjectSubprojectStmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                int subProjectId = rs.getInt(1);
+                newSubProject.setProjectId(subProjectId);
+            }
+            String junctionSql = "INSERT INTO Project_Subproject (ProjectID, SubprojectID) VALUES (?, ?)";
+            PreparedStatement junctionPstmt = con.prepareStatement(junctionSql);
+            junctionPstmt.setInt(1, parentId);
+            junctionPstmt.setInt(2, newSubProject.getProjectId());
+            junctionPstmt.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println("Error adding new subproject");
             e.printStackTrace();
         }
-    }
-
-    private int getLastInsertedId(Connection con) throws SQLException {
-        try (PreparedStatement stmt = con.prepareStatement("SELECT LAST_INSERT_ID()")) {
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        }
-        throw new SQLException("Failed to retrieve last inserted ID");
     }
 
     public List<Task> getTasks(int subProjectId, String userRole) {

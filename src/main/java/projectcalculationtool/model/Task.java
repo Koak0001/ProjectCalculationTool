@@ -2,8 +2,6 @@ package projectcalculationtool.model;
 
 public class Task {
     private String taskName;
-
-
     private String role;
     private int projectId;
     private int taskId;
