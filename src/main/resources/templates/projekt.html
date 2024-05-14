@@ -6,6 +6,10 @@
 </head>
 <body>
 <h4 th:if="${subprojects.isEmpty()}" th:text="'Ingen delprojekter fundet. Opret delprojekter for projektet ' + ${projectName}"></h4>
+<div>
+    <a th:if="${#strings.equalsIgnoreCase(role, 'projectLead') || #strings.equalsIgnoreCase(role, 'developer')}" th:href="@{'/oversigt/' + ${projectName} + '/opret_delprojekt' +'?projectName=' +${projectName} +'&parentProjectId=' +${projectId}}">Tilføj delprojekt</a>
+</div>
+
 <div th:if="${subprojects != null}" th:each="project : ${subprojects}" class="subproject-list">
     <h2 th:text="${project.projectName}"></h2>
     <a th:href="@{'/oversigt/' + ${project.projectName} + '/opgaver'+'?subProjectId=' + ${project.projectId} + '&userRole=' + ${project.userRole}}" class="task-button">Se delprojekt!</a>
