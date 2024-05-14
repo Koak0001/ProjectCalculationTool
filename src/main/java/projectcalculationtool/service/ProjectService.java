@@ -34,6 +34,7 @@ public class ProjectService {
     public List<Task> getTasks(int projectId, String role) {return projectRepository.getTasks(projectId, role);}
 //  Call getTask
     public Task getTask (int taskId) {return projectRepository.getTask(taskId);}
+    public void updateTask (Task task) {projectRepository.updateTask(task);}
 
 //    TODO - Call verifyUser/login
 //    TODO - Call getUserSitePermissions

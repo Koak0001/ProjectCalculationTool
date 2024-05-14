@@ -90,7 +90,6 @@ public class ProjectRepository {
                 subproject.setDeadline(deadline);
                 subproject.setProjectId(subprojectId);
                 subproject.setHours(hours);
-//                subproject.setParentProjectId(projectId);
                 subproject.setUserRole(userRole);
                 subprojects.add(subproject);
             }
@@ -246,4 +245,17 @@ public class ProjectRepository {
     }
         return task;
 }
+    public void updateTask(Task updatedTask) {
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String updateTaskSql = "UPDATE Task SET TaskName = ?, Hours = ? WHERE TaskID = ?";
+            PreparedStatement pstmt = con.prepareStatement(updateTaskSql);
+            pstmt.setString(1, updatedTask.getTaskName());
+            pstmt.setInt(2, updatedTask.getHours());
+            pstmt.setInt(3, updatedTask.getTaskId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error updating task");
+            e.printStackTrace();
+        }
+    }
 }
