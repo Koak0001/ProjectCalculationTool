@@ -33,6 +33,7 @@ public class ProjectController {
 @GetMapping("projekter")
 public String getAllProjects(Model model){
     int userId = 1;
+
     List<Project> projects = projectService.getProjects(userId);
     model.addAttribute("projects", projects);
     return "projekter";}
@@ -92,13 +93,28 @@ public String addProject(@PathVariable int projectLeadId, @ModelAttribute("proje
     public String showSubProjectForm(@RequestParam int parentProjectId, @PathVariable String projectName, Model model) {
         model.addAttribute("projectName", projectName);
         model.addAttribute("projectId", parentProjectId);
-        model.addAttribute("subproject", new SubProject("", parentProjectId));
+        model.addAttribute("subproject", new SubProject(""));
         return "opret_delprojekt";
     }
 
     @PostMapping("/{projectName}/opret_delprojekt")
     public String addSubProject(@ModelAttribute("subproject") SubProject newSubProject, @RequestParam int parentProjectId) {
         projectService.addSubProject(newSubProject, parentProjectId);
+        return "redirect:/oversigt/projekter";
+    }
+
+    @GetMapping("/{subProjectName}/rediger_delprojekt/{subProjectId}")
+    public String showUpdateSubProjectForm(@PathVariable int subProjectId, Model model) {
+        SubProject subProject = projectService.getSubProject(subProjectId);
+        model.addAttribute("subProject", subProject);
+        return "updateSubProject";
+    }
+
+    @PostMapping("/{subProjectName}/rediger_delprojekt")
+    public String updateSubProject(@ModelAttribute("subProject") SubProject subProject) {
+        System.out.println("SubProject ID: " + subProject.getProjectId());
+        System.out.println("SubProject Name: " + subProject.getProjectName());
+        projectService.updateSubProject(subProject);
         return "redirect:/oversigt/projekter";
     }
 

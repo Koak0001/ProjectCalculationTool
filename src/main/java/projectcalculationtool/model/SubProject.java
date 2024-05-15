@@ -1,7 +1,7 @@
 package projectcalculationtool.model;
 
 public class SubProject extends Project {
-    public SubProject(String projectName, int parentProjectId) {
+    public SubProject(String projectName) {
         super(projectName);
     }
 }

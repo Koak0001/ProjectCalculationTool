@@ -19,11 +19,9 @@ public class ProjectRepository {
     @Value("${spring.datasource.password}")
     String dbPassword;
 
-
 //    TODO - login/verifyUser
 //    TODO  - logout
 //    TODO  - getUsers
-//    TODO  - getHoursPerDay?
 
     public List<Project> getProjects(int userId) {
         List<Project> projects = new ArrayList<>();
@@ -85,7 +83,7 @@ public class ProjectRepository {
                 int hours = resultSet.getInt("Hours");
                 Date deadline = resultSet.getDate("Deadline");
 
-                SubProject subproject = new SubProject(subprojectName, projectId);
+                SubProject subproject = new SubProject(subprojectName);
 
                 subproject.setDeadline(deadline);
                 subproject.setProjectId(subprojectId);
@@ -129,17 +127,6 @@ public class ProjectRepository {
                 String projectName = resultSet.getString("ProjectName");
                 project = new Project(projectName);
                 project.setProjectId(projectId);
-            } else {
-                // TODO Might be redundant?
-                sql = "SELECT * FROM SubProject WHERE subProjectId = ?";
-                psts = con.prepareStatement(sql);
-                psts.setInt(1, projectId);
-                resultSet = psts.executeQuery();
-                if (resultSet.next()) {
-                    String projectName = resultSet.getString("SubProjectName");
-                    project = new Project(projectName);
-                    project.setProjectId(projectId);
-                }
             }
         } catch (SQLException e) {
             System.out.println("Project not located");
@@ -147,6 +134,68 @@ public class ProjectRepository {
         }
         return project;
     }
+
+    public SubProject getSubProject(int subProjectId) {
+        SubProject subProject = null;
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String sql = "SELECT * FROM SubProject WHERE subProjectId = ?";
+            PreparedStatement psts = con.prepareStatement(sql);
+            psts.setInt(1, subProjectId);
+            ResultSet resultSet = psts.executeQuery();
+            if (resultSet.next()) {
+                String subProjectName = resultSet.getString("SubProjectName");
+                Date deadline = resultSet.getDate("Deadline");
+                subProject = new SubProject(subProjectName);
+                subProject.setProjectId(subProjectId);
+                subProject.setDeadline(deadline);
+
+            }
+        } catch (SQLException e) {
+            System.out.println("SubProject not located");
+            e.printStackTrace();
+        }
+        return subProject;
+    }
+
+
+    public void addNewSubProject(SubProject newSubProject, int parentId) {
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String insertSubprojectSql = "INSERT INTO Subproject (SubprojectName) VALUES (?)";
+            PreparedStatement pstmt = con.prepareStatement(insertSubprojectSql, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, newSubProject.getProjectName());
+            pstmt.executeUpdate();
+
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                int subProjectId = rs.getInt(1);
+                newSubProject.setProjectId(subProjectId);
+            }
+            String junctionSql = "INSERT INTO Project_Subproject (ProjectID, SubprojectID) VALUES (?, ?)";
+            PreparedStatement junctionPstmt = con.prepareStatement(junctionSql);
+            junctionPstmt.setInt(1, parentId);
+            junctionPstmt.setInt(2, newSubProject.getProjectId());
+            junctionPstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println("Error adding new subproject");
+            e.printStackTrace();
+        }
+    }
+    public void updateSubProject(SubProject updatedSubProject) {
+        System.out.println("Updating SubProject: " + updatedSubProject.getProjectId() + ", " + updatedSubProject.getProjectName());
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String updateSubProjectSql = "UPDATE Subproject SET SubprojectName = ? WHERE SubprojectId = ?";
+            PreparedStatement pstmt = con.prepareStatement(updateSubProjectSql);
+            pstmt.setString(1, updatedSubProject.getProjectName());
+            pstmt.setInt(2, updatedSubProject.getProjectId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error updating subproject");
+            e.printStackTrace();
+        }
+    }
+
+
     public void addNewTask(Task newTask, int parentId) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
             String insertTaskSql = "INSERT INTO Task (TaskName, Hours) VALUES (?, ?)";
@@ -168,29 +217,6 @@ public class ProjectRepository {
 
         } catch (SQLException e) {
             System.out.println("Error adding new task");
-            e.printStackTrace();
-        }
-    }
-    public void addNewSubProject(SubProject newSubProject, int parentId) {
-        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String insertSubprojectSql = "INSERT INTO Subproject (SubprojectName) VALUES (?)";
-            PreparedStatement pstmt = con.prepareStatement(insertSubprojectSql, Statement.RETURN_GENERATED_KEYS);
-            pstmt.setString(1, newSubProject.getProjectName());
-            pstmt.executeUpdate();
-
-            ResultSet rs = pstmt.getGeneratedKeys();
-            if (rs.next()) {
-                int subProjectId = rs.getInt(1);
-                newSubProject.setProjectId(subProjectId);
-            }
-            String junctionSql = "INSERT INTO Project_Subproject (ProjectID, SubprojectID) VALUES (?, ?)";
-            PreparedStatement junctionPstmt = con.prepareStatement(junctionSql);
-            junctionPstmt.setInt(1, parentId);
-            junctionPstmt.setInt(2, newSubProject.getProjectId());
-            junctionPstmt.executeUpdate();
-
-        } catch (SQLException e) {
-            System.out.println("Error adding new subproject");
             e.printStackTrace();
         }
     }
@@ -245,6 +271,7 @@ public class ProjectRepository {
     }
         return task;
 }
+
     public void updateTask(Task updatedTask) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
             String updateTaskSql = "UPDATE Task SET TaskName = ?, Hours = ? WHERE TaskID = ?";
