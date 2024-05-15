@@ -30,16 +30,19 @@ public class ProjectService {
     public Project getProject (int projectId) {return projectRepository.getProject(projectId);}
 //   Call getSubprojects
     public List<SubProject> getSubProjects(int projectId, String role) {return projectRepository.getSubProjects(projectId, role);}
+// Call getSubProject
+    public SubProject getSubProject(int subProjectId){return (SubProject) projectRepository.getSubProject(subProjectId);}
+    public void updateSubProject(SubProject subProject) {projectRepository.updateSubProject(subProject);}
+
 //  Call getTasks
     public List<Task> getTasks(int projectId, String role) {return projectRepository.getTasks(projectId, role);}
 //  Call getTask
     public Task getTask (int taskId) {return projectRepository.getTask(taskId);}
+    public void updateTask (Task task) {projectRepository.updateTask(task);}
 
 //    TODO - Call verifyUser/login
 //    TODO - Call getUserSitePermissions
 //    TODO - Call createProject
-
-
 //    TODO - Call getUsers
 //    TODO - Call setRole
 //    TODO - Call getRole

@@ -14,7 +14,10 @@
     <p th:text="'Forventes afsluttet efter '+ ${task.hours}+' arbejdstimer.'"></p>
 
 </div>
-
+<br>
+<div>
+    <a th:if="${#strings.equalsIgnoreCase(role, 'projectLead') || #strings.equalsIgnoreCase(role, 'developer')}" th:href="@{'/oversigt/' + ${taskName} + '/rediger_opgave/'+ ${task.taskId} +'?taskId=' +${task.taskId}}">Rediger opgave.</a>
+</div>
 </body>
 
 </html>

@@ -1,5 +1,7 @@
 package projectcalculationtool.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 
 public class Project {
@@ -16,6 +18,7 @@ public class Project {
     public String getProjectName() {
         return projectName;
     }
+    public void setProjectName(String projectName) {this.projectName = projectName;}
     public String getUserRole() {
         return userRole;
     }
