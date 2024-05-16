@@ -1,5 +1,5 @@
 package projectcalculationtool.service;
-
+import projectcalculationtool.model.User;
 import org.springframework.stereotype.Service;
 import projectcalculationtool.model.Project;
 import projectcalculationtool.model.SubProject;
@@ -23,21 +23,18 @@ public class ProjectService {
 //    Call getProjects
     public List<Project> getProjects(int userId) {return projectRepository.getProjects(userId);}
 //     Call getProject
-    public Project getProject (int projectId, boolean isSubProject) {return projectRepository.getProject(projectId, isSubProject);}
+    public Project getProject (int projectId) {return projectRepository.getProject(projectId);}
 //   Call getSubprojects
     public List<SubProject> getSubProjects(int projectId) {return projectRepository.getSubProjects(projectId);}
+//  Call verifyUser/login
+    public void login(String username, String password) {projectRepository.login(username, password);}
+
+    public User getLoggedInUser() {return projectRepository.getLoggedInUser();}
 
 
-//    TODO - Call verifyUser/login
 //    TODO - Call getUserSitePermissions
 //    TODO - Call createProject
 
-
-
-//    TODO - Call getSubproject
-//    TODO - Call createTask
-//    TODO - Call getTasks
-//    TODO - Call getTask
 //    TODO - Call getUsers
 //    TODO - Call setRole
 //    TODO - Call getRole

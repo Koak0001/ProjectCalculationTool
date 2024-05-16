@@ -1,4 +1,7 @@
 package projectcalculationtool.controller;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import projectcalculationtool.model.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,6 +15,7 @@ import projectcalculationtool.model.Project;
 import projectcalculationtool.model.SubProject;
 import projectcalculationtool.service.ProjectService;
 
+
 import java.util.List;
 @Controller
 @RequestMapping("oversigt")
@@ -24,14 +28,39 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
-//    TODO index, with login option.
-//    TODO index, logged in.
+
+@PostMapping(value = "/check-login")
+public String checkLogin(@RequestParam("username") String username, @RequestParam("password") String password, HttpServletRequest request, Model model) {
+    System.out.println(username);
+    System.out.println(password);
+        projectService.login(username, password);
+    if (projectService.getLoggedInUser() != null) {
+        HttpSession session = request.getSession();
+        session.setAttribute("userId", projectService.getLoggedInUser().getUserId());
+        return "redirect:/oversigt/projekter";
+    } else {
+        model.addAttribute("loginError", "Username or password is incorrect");
+        return "index";
+    }
+}
+
+    @GetMapping(value = "/forside")
+    public String index(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            return "index.html";
+        } else {
+            return "redirect:/";
+        }
+    }
+
 //    TODO log out
 
 //   View Projects
 @GetMapping("projekter")
 public String getAllProjects(Model model){
-    int userId = 1;
+    User user = projectService.getLoggedInUser();
+    int userId = user.getUserId();
     List<Project> projects = projectService.getProjects(userId);
     model.addAttribute("projects", projects);
     return "projekter";}
@@ -40,7 +69,7 @@ public String getAllProjects(Model model){
 @GetMapping("/{projectName}")
 public String getProject(@PathVariable int projectId, @PathVariable int userId, @PathVariable boolean isSubProject, Model model){
         List<SubProject> subProjects = projectService.getSubProjects(projectId);
-        Project parent  = projectService.getProject(projectId, isSubProject);
+        Project parent  = projectService.getProject(projectId);
         model.addAttribute("parent", parent);
         model.addAttribute("subprojects", subProjects);
         return "projekt";

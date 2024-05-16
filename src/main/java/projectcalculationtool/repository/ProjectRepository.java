@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import projectcalculationtool.model.Project;
 import projectcalculationtool.model.SubProject;
+import projectcalculationtool.model.User;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,11 +18,21 @@ public class ProjectRepository {
     String dbUsername;
     @Value("${spring.datasource.password}")
     String dbPassword;
-
-
-
-//    TODO - login/verifyUser
 //    TODO  - logout
+//    TODO  - getUsers
+
+    private User loggedInUser = new User();
+
+    public void login(String username, String password) {
+    User user = checkUser(username, password);
+    if (user != null) {
+       this.loggedInUser = user;
+    }
+}
+
+public User getLoggedInUser() {
+    return loggedInUser;
+}
 
 //    getProjects
 public List<Project> getProjects(int userId) {
@@ -95,18 +106,15 @@ public void addNewProject(Project newProject) {
 }
 
 //    getProject
-public Project getProject(int projectId, boolean isSubProject) {
+public Project getProject(int projectId) {
     Project project = null;
     try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-        String tableName = isSubProject ? "SubProject" : "Project";
-        String columnName = isSubProject ? "SubProjectName" : "ProjectName";
-
-        String sql = "SELECT * FROM " + tableName + " WHERE " + (isSubProject ? "subProjectId" : "projectId") + " = ?";
+        String sql = "SELECT * FROM Project WHERE projectId = ?";
         PreparedStatement psts = con.prepareStatement(sql);
         psts.setInt(1, projectId);
         ResultSet resultSet = psts.executeQuery();
         if (resultSet.next()) {
-            String projectName = resultSet.getString(columnName);
+            String projectName = resultSet.getString("ProjectName");
             project = new Project(projectName);
             project.setProjectId(projectId);
         }
@@ -154,16 +162,29 @@ public Project getProject(int projectId, boolean isSubProject) {
         throw new SQLException("Failed to retrieve last inserted ID");
     }
 
+    public User checkUser(String username, String password) {
+        User userLoggedIn = null;
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String sql = "SELECT * FROM User WHERE username=? AND password=?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, username);
+            ps.setString(2, password);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int userId = rs.getInt("userId");
+                userLoggedIn = new User(username, password);
+                userLoggedIn.setUserId(userId);
+            }
+        } catch (SQLException e) {
+            System.out.println("Checking user failed");
+            throw new RuntimeException(e);
+        }
+        return userLoggedIn;
+    }
+    //TODO udvid metode
 
 
 
 
 
-//    TODO  - getTasks
-//    TODO  - getTask
-//    TODO  - getUsers
-//    TODO  - getHoursTask
-//    TODO  - getHoursSubProject
-//    TODO  - getHoursTotal
-//    TODO  - getHoursPerDay
 }

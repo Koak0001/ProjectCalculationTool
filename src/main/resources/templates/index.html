@@ -2,9 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Alpha Solutions - ProjectCalculationTool</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
 <body>
+<div th:replace="~{fragments/headerlogin :: header}"></div>
+<div class="koak">
+    <main class="Login">
+        <h1>Login</h1>
+        <form action="/oversigt/check-login" method="post" class="Login">
+            <div class="Login">
+                <label for="username">Brugernavn:</label>
+                <input type="text" id="username" name="username" required />
+                <label for="password">Adgangskode:</label>
+                <input type="password" id="password" name="password" required />
+                <br>
+                <button type="submit" class="button">Login</button>
 
+                <p th:if="${loginError}" th:text="${loginError}" class="error-message"></p>
+            </div>
+        </form>
+
+    </main>
+</div>
+</section>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
