@@ -45,14 +45,14 @@ public User getLoggedInUser() {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
             String sql = "SELECT P.Deadline, P.projectId, P.projectName, R.RoleTitle, SUM(Temp.Total) AS TotalHours " +
                     "FROM User_Project_Role UPR " +
-                    "JOIN Project P ON UPR.ProjectID = P.ProjectID " +
-                    "JOIN Role R ON UPR.RoleID = R.RoleID " +
+                    "JOIN Project P ON UPR.ProjectId = P.ProjectId " +
+                    "JOIN UserRole R ON UPR.RoleId = R.RoleId " +
                     "LEFT JOIN (SELECT PS.ProjectId, ST.SubProjectId, SUM(T.Hours) AS Total " +
                     "           FROM Subproject_Task ST " +
                     "           JOIN Task T ON ST.TaskId = T.TaskId " +
                     "           JOIN Project_Subproject PS ON ST.SubProjectId = PS.SubProjectId " +
                     "           GROUP BY PS.ProjectId, ST.SubProjectId) AS Temp ON P.ProjectId = Temp.ProjectId " +
-                    "WHERE UPR.UserID = ? " +
+                    "WHERE UPR.UserId = ? " +
                     "GROUP BY P.ProjectId";
             PreparedStatement psts = con.prepareStatement(sql);
             psts.setInt(1, userId);
@@ -82,7 +82,7 @@ public User getLoggedInUser() {
     public List<SubProject> getSubProjects(int projectId, String userRole) {
         List<SubProject> subprojects = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String sql = "SELECT P.SubprojectId, P.SubprojectName, Temp.Total AS Hours, P.Deadline " +
+            String sql = "SELECT P.SubprojectId, P.SubprojectName, Temp.Total AS Hours " +
                     "FROM Project_Subproject PS " +
                     "JOIN Subproject P ON PS.SubprojectId = P.SubprojectId " +
                     "LEFT JOIN (SELECT ST.SubProjectId, SUM(T.Hours) AS Total " +
@@ -97,11 +97,9 @@ public User getLoggedInUser() {
                 int subprojectId = resultSet.getInt("SubprojectId");
                 String subprojectName = resultSet.getString("SubprojectName");
                 int hours = resultSet.getInt("Hours");
-                Date deadline = resultSet.getDate("Deadline");
 
                 SubProject subproject = new SubProject(subprojectName);
 
-                subproject.setDeadline(deadline);
                 subproject.setProjectId(subprojectId);
                 subproject.setHours(hours);
                 subproject.setUserRole(userRole);
@@ -162,10 +160,8 @@ public User getLoggedInUser() {
             ResultSet resultSet = psts.executeQuery();
             if (resultSet.next()) {
                 String subProjectName = resultSet.getString("SubProjectName");
-                Date deadline = resultSet.getDate("Deadline");
                 subProject = new SubProject(subProjectName);
                 subProject.setProjectId(subProjectId);
-                subProject.setDeadline(deadline);
 
             }
         } catch (SQLException e) {
@@ -188,7 +184,7 @@ public User getLoggedInUser() {
                 int subProjectId = rs.getInt(1);
                 newSubProject.setProjectId(subProjectId);
             }
-            String junctionSql = "INSERT INTO Project_Subproject (ProjectID, SubprojectID) VALUES (?, ?)";
+            String junctionSql = "INSERT INTO Project_Subproject (ProjectId, SubprojectId) VALUES (?, ?)";
             PreparedStatement junctionPstmt = con.prepareStatement(junctionSql);
             junctionPstmt.setInt(1, parentId);
             junctionPstmt.setInt(2, newSubProject.getProjectId());
@@ -243,7 +239,7 @@ public User getLoggedInUser() {
     public User checkUser(String username, String password) {
         User userLoggedIn = null;
         try (Connection connection = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String sql = "SELECT * FROM User WHERE username=? AND password=?";
+            String sql = "SELECT * FROM User WHERE username=? AND UserPassword=?";
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, username);
             ps.setString(2, password);
@@ -313,7 +309,7 @@ public User getLoggedInUser() {
 
     public void updateTask(Task updatedTask) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String updateTaskSql = "UPDATE Task SET TaskName = ?, Hours = ? WHERE TaskID = ?";
+            String updateTaskSql = "UPDATE Task SET TaskName = ?, Hours = ? WHERE TaskId = ?";
             PreparedStatement pstmt = con.prepareStatement(updateTaskSql);
             pstmt.setString(1, updatedTask.getTaskName());
             pstmt.setInt(2, updatedTask.getHours());

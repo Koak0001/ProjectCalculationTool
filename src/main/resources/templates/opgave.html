@@ -16,7 +16,7 @@
 </div>
 <br>
 <div>
-    <a th:if="${#strings.equalsIgnoreCase(role, 'projectLead') || #strings.equalsIgnoreCase(role, 'developer')}" th:href="@{'/oversigt/' + ${taskName} + '/rediger_opgave/'+ ${task.taskId} +'?taskId=' +${task.taskId}}">Rediger opgave.</a>
+    <a th:if="${#strings.equalsIgnoreCase(role, 'projektleder') || #strings.equalsIgnoreCase(role, 'udvikler')}" th:href="@{'/oversigt/' + ${taskName} + '/rediger_opgave/'+ ${task.taskId} +'?taskId=' +${task.taskId}}">Rediger opgave.</a>
 </div>
 </body>
 
