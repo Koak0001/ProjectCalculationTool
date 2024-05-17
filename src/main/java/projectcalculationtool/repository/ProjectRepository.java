@@ -5,6 +5,8 @@ import org.springframework.stereotype.Repository;
 import projectcalculationtool.model.Project;
 import projectcalculationtool.model.SubProject;
 import projectcalculationtool.model.Task;
+import projectcalculationtool.model.User;
+
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -19,9 +21,24 @@ public class ProjectRepository {
     @Value("${spring.datasource.password}")
     String dbPassword;
 
-//    TODO - login/verifyUser
-//    TODO  - logout
+    private User loggedInUser = new User();
+  //    TODO  - logout
 //    TODO  - getUsers
+
+  
+  
+ public void login(String username, String password) {
+    User user = checkUser(username, password);
+    if (user != null) {
+       this.loggedInUser = user;
+    }
+}
+
+public User getLoggedInUser() {
+    return loggedInUser;
+}
+  
+  
 
     public List<Project> getProjects(int userId) {
         List<Project> projects = new ArrayList<>();
@@ -37,7 +54,6 @@ public class ProjectRepository {
                     "           GROUP BY PS.ProjectId, ST.SubProjectId) AS Temp ON P.ProjectId = Temp.ProjectId " +
                     "WHERE UPR.UserID = ? " +
                     "GROUP BY P.ProjectId";
-
             PreparedStatement psts = con.prepareStatement(sql);
             psts.setInt(1, userId);
             ResultSet resultSet = psts.executeQuery();
@@ -116,6 +132,7 @@ public class ProjectRepository {
         }
     }
 
+
     public Project getProject(int projectId) {
         Project project = null;
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
@@ -131,9 +148,10 @@ public class ProjectRepository {
         } catch (SQLException e) {
             System.out.println("Project not located");
             e.printStackTrace();
-        }
+          }
         return project;
     }
+
 
     public SubProject getSubProject(int subProjectId) {
         SubProject subProject = null;
@@ -221,7 +239,28 @@ public class ProjectRepository {
         }
     }
 
-    public List<Task> getTasks(int subProjectId, String userRole) {
+
+    public User checkUser(String username, String password) {
+        User userLoggedIn = null;
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String sql = "SELECT * FROM User WHERE username=? AND password=?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, username);
+            ps.setString(2, password);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int userId = rs.getInt("userId");
+                userLoggedIn = new User(username, password);
+                userLoggedIn.setUserId(userId);
+            }
+        } catch (SQLException e) {
+            System.out.println("Checking user failed");
+            throw new RuntimeException(e);
+        }
+        return userLoggedIn;
+    }
+
+  public List<Task> getTasks(int subProjectId, String userRole) {
         List<Task> tasks = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
             String sql = "SELECT T.TaskId, T.TaskName, T.Hours " +
@@ -236,7 +275,6 @@ public class ProjectRepository {
                 String taskName = resultSet.getString("TaskName");
                 int hours = resultSet.getInt("Hours");
                 Task task = new Task(taskName);
-
                 task.setTaskId(taskId);
                 task.setHours(hours);
                 task.setProjectId(subProjectId);
@@ -271,6 +309,7 @@ public class ProjectRepository {
     }
         return task;
 }
+
 
     public void updateTask(Task updatedTask) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
