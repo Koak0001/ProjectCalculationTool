@@ -1,17 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${projectName}"></title>
+    <title th:text="${project != null ? project.projectName : 'Project not found'}"></title>
 </head>
 <body>
-<h4 th:if="${subprojects.isEmpty()}" th:text="'Ingen delprojekter fundet. Opret delprojekter for projektet ' + ${projectName}"></h4>
-<div>
-    <a th:if="${#strings.equalsIgnoreCase(role, 'projektleder')}" th:href="@{'/oversigt/' + ${projectName} + '/rediger_projekt/' +${projectId} +'?projectId=' +${projectId}}">Rediger projekt</a>
+<div th:if="${project != null}">
+    <a th:if="${#strings.equalsIgnoreCase(role, 'projektleder')}" th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projekt/' + ${project.projectId} +'?projectId=' + ${project.projectId}}">Rediger projekt</a>
     <br>
-    <a th:if="${#strings.equalsIgnoreCase(role, 'projektleder') || #strings.equalsIgnoreCase(role, 'udvikler')}" th:href="@{'/oversigt/' + ${projectName} + '/opret_delprojekt' +'?projectName=' +${projectName} +'&parentProjectId=' +${projectId}}">Tilføj delprojekt</a>
+    <a th:if="${#strings.equalsIgnoreCase(role, 'projektleder') || #strings.equalsIgnoreCase(role, 'udvikler')}" th:href="@{'/oversigt/' + ${project.projectName} + '/opret_delprojekt' +'?projectName=' + ${project.projectName} +'&parentProjectId=' + ${project.projectId}}">Tilføj delprojekt</a>
 </div>
-<!--subprojects overview-->
+
+<h4 th:if="${subprojects.isEmpty()}" th:text="'Ingen delprojekter fundet. Opret delprojekter for projektet ' + ${project.projectName}"></h4>
+<br>
+<p th:text="${project.description}"></p>
+<br>
 <div th:if="${subprojects != null}" th:each="subProject : ${subprojects}" class="subproject-list">
     <h2 th:text="${subProject.projectName}"></h2>
     <a th:href="@{'/oversigt/' + ${subProject.projectName} + '/opgaver'+'?subProjectId=' + ${subProject.projectId} + '&userRole=' + ${subProject.userRole}}" class="task-button">Se delprojekt!</a>

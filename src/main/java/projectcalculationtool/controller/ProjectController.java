@@ -57,7 +57,7 @@ public class ProjectController {
 
 //    TODO log out
 
-    //   View Projects for user
+    //   View projects for user
     @GetMapping("projekter")
     public String getAllProjects(Model model) {
         User user = projectService.getLoggedInUser();
@@ -67,14 +67,19 @@ public class ProjectController {
         return "projekter";
     }
 
-    //   View Project's subprojects
+    //   View project with subprojects
     @GetMapping("/{projectName}")
-    public String getProject(@PathVariable String projectName,
-                             @RequestParam int projectId,
+    public String getProject(@RequestParam int projectId,
                              @RequestParam String userRole,
                              Model model) {
+        Project project = projectService.getProject(projectId);
+        if (project == null) {
+            model.addAttribute("errorMessage", "Project not found");
+            return "error"; // Ensure you have an error.html template
+        }
+
         List<SubProject> subProjects = projectService.getSubProjects(projectId, userRole);
-        model.addAttribute("projectName", projectName);
+        model.addAttribute("project", project);
         model.addAttribute("projectId", projectId);
         model.addAttribute("role", userRole);
         model.addAttribute("subprojects", subProjects);

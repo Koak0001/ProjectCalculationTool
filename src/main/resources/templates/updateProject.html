@@ -11,6 +11,11 @@
     <input type="text" id="projectName" name="projectName" th:value="${project.projectName}" />
     <label for="deadline">Deadline:</label>
     <input type="date" th:field="${project.deadline}" id="deadline" required/>
+    <br>
+    <div class="form-description">
+        <label for="description">Projektbeskrivelse:</label>
+        <textarea th:field="${project.description}" id="description"></textarea>
+    </div>
     <button type="submit">Afslut redigering</button>
     <a href="/oversigt/projekter" class="btn btn-secondary">Fortryd ændringer</a>
 </form>
