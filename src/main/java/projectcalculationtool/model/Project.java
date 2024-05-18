@@ -8,8 +8,8 @@ public class Project {
     private String projectName;
     private String userRole;
     private int projectId;
-    private Date deadline;
-    private int hours;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date deadline;    private int hours;
     boolean isArchived;
 
     public Project(String projectName) {

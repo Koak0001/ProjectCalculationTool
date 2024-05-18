@@ -108,16 +108,33 @@ public class ProjectController {
         return "opgave";
     }
 
-        @GetMapping("/nytprojekt")
-        public String showProjectForm (Model model){
-            model.addAttribute("project", new Project(""));
-            return "nytprojekt";
-        }
+    @GetMapping("/nytprojekt")
+    public String showProjectForm(Model model) {
+        model.addAttribute("project", new Project(""));
+        return "new_project";
+    }
 
-        @PostMapping("/nytprojekt")
-        public String addProject ( @PathVariable int projectLeadId, @ModelAttribute("project") Project project){
-            return "redirect:/projekter";
-        }
+    @PostMapping("/nytprojekt")
+    public String addProject(@ModelAttribute("project") Project project) {
+        User user = projectService.getLoggedInUser();
+        int projectLeadId = user.getUserId();
+        projectService.addProject(project, projectLeadId);
+        return "redirect:/oversigt/projekter";
+    }
+    @GetMapping("/{projectName}/rediger_projekt/{projectId}")
+    public String showUpdateProjectForm ( @PathVariable int projectId, Model model){
+        Project project = projectService.getProject(projectId);
+        model.addAttribute("project", project);
+        return "updateProject";
+    }
+
+    @PostMapping("/{projectName}/rediger_projekt")
+    public String updateProject (@ModelAttribute("project") Project project){
+        System.out.println("Project ID: " + project.getProjectId());
+        System.out.println("Project Name: " + project.getProjectName());
+        projectService.updateProject(project);
+        return "redirect:/oversigt/projekter";
+    }
 
         @GetMapping("/{projectName}/opret_delprojekt")
         public String showSubProjectForm ( @RequestParam int parentProjectId, @PathVariable String projectName, Model

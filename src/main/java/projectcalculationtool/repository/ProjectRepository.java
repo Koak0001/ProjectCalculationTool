@@ -112,23 +112,45 @@ public User getLoggedInUser() {
         return subprojects;
     }
 
-    public void addNewProject(Project newProject) {
+    public void addNewProject(Project newProject, int projectLeadId) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String sql = "INSERT INTO Project (ProjectName) VALUES (?)";
-            PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            pstmt.setString(1, newProject.getProjectName());
-            pstmt.executeUpdate();
+            con.setAutoCommit(false);
 
-            ResultSet rs = pstmt.getGeneratedKeys();
-            if (rs.next()) {
-                int projectId = rs.getInt(1);
-                newProject.setProjectId(projectId);
+            String sql = "INSERT INTO Project (ProjectName, Deadline) VALUES (?, ?)";
+            try (PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                pstmt.setString(1, newProject.getProjectName());
+                pstmt.setDate(2, new java.sql.Date(newProject.getDeadline().getTime()));
+                pstmt.executeUpdate();
+
+                try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        int projectId = rs.getInt(1);
+                        newProject.setProjectId(projectId);
+                    }
+                }
+                insertUserProjectRole(con, projectLeadId, newProject.getProjectId(), 2);
+                insertUserProjectRole(con, 1, newProject.getProjectId(), 1);
+                con.commit();
+            } catch (SQLException e) {
+                con.rollback();
+                throw e;
             }
         } catch (SQLException e) {
             System.out.println("Error adding new project");
             e.printStackTrace();
         }
     }
+
+    private void insertUserProjectRole(Connection con, int userId, int projectId, int roleId) throws SQLException {
+        String junctionSql = "INSERT INTO User_Project_Role (UserId, ProjectId, RoleId) VALUES (?, ?, ?)";
+        try (PreparedStatement junctionPstmt = con.prepareStatement(junctionSql)) {
+            junctionPstmt.setInt(1, userId);
+            junctionPstmt.setInt(2, projectId);
+            junctionPstmt.setInt(3, roleId);
+            junctionPstmt.executeUpdate();
+        }
+    }
+
 
 
     public Project getProject(int projectId) {
@@ -148,6 +170,19 @@ public User getLoggedInUser() {
             e.printStackTrace();
           }
         return project;
+    }
+    public void updateProject(Project updatedProject) {
+        System.out.println("Updating Project: " + updatedProject.getProjectId() + ", " + updatedProject.getProjectName());
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String updateProjectSql = "UPDATE Project SET ProjectName = ? WHERE ProjectId = ?";
+            PreparedStatement pstmt = con.prepareStatement(updateProjectSql);
+            pstmt.setString(1, updatedProject.getProjectName());
+            pstmt.setInt(2, updatedProject.getProjectId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error updating project");
+            e.printStackTrace();
+        }
     }
 
 

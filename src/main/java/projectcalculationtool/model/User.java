@@ -9,7 +9,6 @@ public class User {
     private String password;
     private String username;
     boolean isAdmin;
-    boolean isCTO;
     boolean isProjectLead;
     int userId;
 
@@ -40,7 +39,6 @@ public class User {
     public String getLogin() {return login;}
     public String getPassword() {return password;}
     public boolean isAdmin() {return isAdmin;}
-    public boolean isCTO() {return isCTO;}
     public boolean isProjectLead() {return isProjectLead;}
     public int getUserId() {return userId;}
     public void setName(String name) {this.name = name;}
@@ -51,7 +49,6 @@ public class User {
     public void setLogin(String login) {this.login = login;}
     public void setPassword(String password) {this.password = password;}
     public void setAdmin(boolean isAdmin) {this.isAdmin = isAdmin;}
-    public void setCTO(boolean isCTO) {this.isCTO = isCTO;}
     public void setProjectLead(boolean projectLead) {this.isProjectLead = projectLead;}
     public void setUserId(int userId) {this.userId = userId;}
 
