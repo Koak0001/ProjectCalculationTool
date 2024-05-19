@@ -30,10 +30,9 @@ public class ProjectController {
     }
 
 
+
     @PostMapping(value = "/check-login")
     public String checkLogin(@RequestParam("username") String username, @RequestParam("password") String password, HttpServletRequest request, Model model) {
-        System.out.println(username);
-        System.out.println(password);
         projectService.login(username, password);
         if (projectService.getLoggedInUser() != null) {
             HttpSession session = request.getSession();
@@ -62,9 +61,24 @@ public class ProjectController {
     public String getAllProjects(Model model) {
         User user = projectService.getLoggedInUser();
         int userId = user.getUserId();
-        List<Project> projects = projectService.getProjects(userId);
+        List<Project> projects = projectService.getProjects(userId, false);
         model.addAttribute("projects", projects);
         return "projekter";
+
+    }
+    @GetMapping("arkiv")
+    public String getArchivedProjects(Model model) {
+        User user = projectService.getLoggedInUser();
+        int userId = user.getUserId();
+        List<Project> projects = projectService.getProjects(userId, true);
+        model.addAttribute("projects", projects);
+        return "archive";
+    }
+
+    @PostMapping("/arkiver_projekt")
+    public String archiveProject(@RequestParam int projectId, @RequestParam boolean isArchived) {
+        projectService.archiveProject(projectId, isArchived);
+        return "redirect:/oversigt/arkiv";
     }
 
     //   View project with subprojects
@@ -73,11 +87,6 @@ public class ProjectController {
                              @RequestParam String userRole,
                              Model model) {
         Project project = projectService.getProject(projectId);
-        if (project == null) {
-            model.addAttribute("errorMessage", "Project not found");
-            return "error"; // Ensure you have an error.html template
-        }
-
         List<SubProject> subProjects = projectService.getSubProjects(projectId, userRole);
         model.addAttribute("project", project);
         model.addAttribute("projectId", projectId);
@@ -86,16 +95,18 @@ public class ProjectController {
         return "projekt";
     }
 
+
     // View Subproject's tasks
     @GetMapping("/{projectName}/opgaver")
     public String getSubProject(@PathVariable String projectName,
                                 @RequestParam int subProjectId,
-                                @RequestParam String userRole,
+                                @RequestParam String userRole, @RequestParam boolean archived,
                                 Model model) {
         List<Task> tasks = projectService.getTasks(subProjectId, userRole);
         model.addAttribute("tasks", tasks);
         model.addAttribute("subProjectName", projectName);
         model.addAttribute("role", userRole);
+        model.addAttribute("archived", archived);
         model.addAttribute("subProjectId", subProjectId);
         return "opgaver";
     }
@@ -103,13 +114,14 @@ public class ProjectController {
     // View task
     @GetMapping("/{projectName}/{taskName}")
     public String getTask(@PathVariable String taskName, @RequestParam int subProjectId,
-                          @RequestParam String userRole, @RequestParam int taskId,
+                          @RequestParam String userRole, @RequestParam int taskId, @RequestParam boolean archived,
                           Model model) {
         Task task = projectService.getTask(taskId);
         model.addAttribute("task", task);
         model.addAttribute("taskName", taskName);
         model.addAttribute("subProjectId", subProjectId);
         model.addAttribute("role", userRole);
+        model.addAttribute("archived", archived);
         return "opgave";
     }
 
@@ -135,8 +147,6 @@ public class ProjectController {
 
     @PostMapping("/{projectName}/rediger_projekt")
     public String updateProject (@ModelAttribute("project") Project project){
-        System.out.println("Project ID: " + project.getProjectId());
-        System.out.println("Project Name: " + project.getProjectName());
         projectService.updateProject(project);
         return "redirect:/oversigt/projekter";
     }
@@ -166,8 +176,6 @@ public class ProjectController {
 
         @PostMapping("/{subProjectName}/rediger_delprojekt")
         public String updateSubProject (@ModelAttribute("subProject") SubProject subProject){
-            System.out.println("SubProject ID: " + subProject.getProjectId());
-            System.out.println("SubProject Name: " + subProject.getProjectName());
             projectService.updateSubProject(subProject);
             return "redirect:/oversigt/projekter";
         }

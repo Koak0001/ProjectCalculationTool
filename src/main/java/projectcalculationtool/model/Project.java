@@ -55,5 +55,8 @@ public class Project {
     public boolean isArchived() {
         return isArchived;
     }
-    public void setIsArchived(boolean isArchived) {this.isArchived = isArchived;}
+
+    public void setArchived(boolean isArchived) {
+        this.isArchived = isArchived;
+    }
 }

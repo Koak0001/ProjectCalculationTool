@@ -6,9 +6,16 @@
 </head>
 <body>
 <div th:if="${project != null}">
-    <a th:if="${#strings.equalsIgnoreCase(role, 'projektleder')}" th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projekt/' + ${project.projectId} +'?projectId=' + ${project.projectId}}">Rediger projekt</a>
+    <a th:if="${!project.isArchived() &&  #strings.equalsIgnoreCase(role, 'projektleder')}" th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projekt/' + ${project.projectId} +'?projectId=' + ${project.projectId}}">Rediger projekt</a>
     <br>
-    <a th:if="${#strings.equalsIgnoreCase(role, 'projektleder') || #strings.equalsIgnoreCase(role, 'udvikler')}" th:href="@{'/oversigt/' + ${project.projectName} + '/opret_delprojekt' +'?projectName=' + ${project.projectName} +'&parentProjectId=' + ${project.projectId}}">Tilføj delprojekt</a>
+    <form th:if="${#strings.equalsIgnoreCase(role, 'projektleder')}" th:action="@{/oversigt/arkiver_projekt}" method="post">
+        <input type="hidden" name="projectId" th:value="${project.projectId}" />
+        <input type="hidden" name="isArchived" th:value="${project.isArchived ? false : true}" />
+        <button type="submit" th:text="${project.isArchived} ? 'Flyt til aktuelle projekter' : 'Arkiver projekt'"></button>
+    </form>
+
+    <br>
+    <a th:if="${!project.isArchived() && (#strings.equalsIgnoreCase(role, 'projektleder') || #strings.equalsIgnoreCase(role, 'udvikler'))}" th:href="@{'/oversigt/' + ${project.projectName} + '/opret_delprojekt' +'?projectName=' + ${project.projectName} +'&parentProjectId=' + ${project.projectId}}">Tilføj delprojekt</a>
 </div>
 
 <h4 th:if="${subprojects.isEmpty()}" th:text="'Ingen delprojekter fundet. Opret delprojekter for projektet ' + ${project.projectName}"></h4>
@@ -17,7 +24,7 @@
 <br>
 <div th:if="${subprojects != null}" th:each="subProject : ${subprojects}" class="subproject-list">
     <h2 th:text="${subProject.projectName}"></h2>
-    <a th:href="@{'/oversigt/' + ${subProject.projectName} + '/opgaver'+'?subProjectId=' + ${subProject.projectId} + '&userRole=' + ${subProject.userRole}}" class="task-button">Se delprojekt!</a>
+    <a th:href="@{'/oversigt/' + ${subProject.projectName} + '/opgaver'+'?subProjectId=' + ${subProject.projectId} + '&userRole=' + ${subProject.userRole} + '&archived='+${project.isArchived()}}" class="task-button">Se delprojekt!</a>
 
     <p th:text="${subProject.hours}"></p>
 

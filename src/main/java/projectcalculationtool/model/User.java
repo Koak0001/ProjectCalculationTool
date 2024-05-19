@@ -13,15 +13,6 @@ public class User {
     int userId;
 
 
-    public User(int userId, String name, String surName, String login, String username, String password) {
-        this.userId = userId;
-        this.name = name;
-        this.surName = surName;
-        this.login = login;
-        this.username = username;
-        this.password = password;
-    }
-
     public User(String username, String password) {
         this.username = username;
         this.password = password;
@@ -45,7 +36,7 @@ public class User {
     public void setSurName(String surName) {this.surName = surName;}
     public void setUsername(String username) {this.username = username;}
     public void setEmail(String email) {this.email = email;}
-    public void setCountry(String Country) {this.country = country;}
+    public void setCountry(String country) {this.country = country;}
     public void setLogin(String login) {this.login = login;}
     public void setPassword(String password) {this.password = password;}
     public void setAdmin(boolean isAdmin) {this.isAdmin = isAdmin;}

@@ -5,7 +5,7 @@
     <title>Nyt projekt</title>
 </head>
 <body>
-<h2>Tilføj en opgave til  <span th:text="${subProjectName}"></span></h2>
+<h4>Tilføj en opgave til  <span th:text="${subProjectName}"></span></h4>
 
 <form method="post" th:action="@{/oversigt/nytprojekt}" th:object="${project}">
     <div class="form-project">
@@ -20,10 +20,8 @@
         <textarea th:field="*{description}" id="description"></textarea>
     </div>
     <button type="submit">Opret projekt</button>
-    <a href="/oversigt/projekter" class="btn btn-secondary">Fortryd oprettelse<</a>
-
+    <a href="/oversigt/projekter" class="btn btn-secondary">Fortryd oprettelse</a>
 </form>
-
 
 </body>
 </html>
