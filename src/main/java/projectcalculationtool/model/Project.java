@@ -7,7 +7,9 @@ import java.util.Date;
 public class Project {
     private String projectName;
     private String userRole;
+    private String description = "Ingen beskrivelse";
     private int projectId;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date deadline;
     private int hours;
     boolean isArchived;
@@ -47,10 +49,14 @@ public class Project {
         return hours;
     }
 
+    public String getDescription() {return description;}
+    public void setDescription(String projectDescription) {this.description = projectDescription;}
+
     public boolean isArchived() {
         return isArchived;
     }
-    public void setArchived(boolean archived) {
-        isArchived = archived;
+
+    public void setArchived(boolean isArchived) {
+        this.isArchived = isArchived;
     }
 }

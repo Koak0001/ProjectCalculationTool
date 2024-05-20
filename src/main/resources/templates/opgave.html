@@ -15,7 +15,7 @@
 
 </div>
 <br>
-<div>
+<div th:if="${!archived}">
     <a th:if="${#strings.equalsIgnoreCase(role, 'projektleder') || #strings.equalsIgnoreCase(role, 'udvikler')}" th:href="@{'/oversigt/' + ${taskName} + '/rediger_opgave/'+ ${task.taskId} +'?taskId=' +${task.taskId}}">Rediger opgave.</a>
 </div>
 </body>

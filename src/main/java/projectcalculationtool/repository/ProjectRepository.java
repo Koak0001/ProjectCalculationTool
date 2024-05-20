@@ -23,25 +23,21 @@ public class ProjectRepository {
 
     private User loggedInUser = new User();
 
-  //    TODO  - logout
-  
- public void login(String username, String password) {
+//  TODO  - logout
+    public void login(String username, String password) {
     User user = checkUser(username, password);
     if (user != null) {
-       this.loggedInUser = user;
+       this.loggedInUser = user;}
     }
-}
 
-public User getLoggedInUser() {
+    public User getLoggedInUser() {
     return loggedInUser;
 }
-  
-  
 
-    public List<Project> getProjects(int userId) {
+    public List<Project> getProjects(int userId, boolean archived) {
         List<Project> projects = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String sql = "SELECT P.Deadline, P.projectId, P.projectName, R.RoleTitle, SUM(Temp.Total) AS TotalHours " +
+            String sql = "SELECT P.*, R.RoleTitle, SUM(Temp.Total) AS TotalHours " +
                     "FROM User_Project_Role UPR " +
                     "JOIN Project P ON UPR.ProjectId = P.ProjectId " +
                     "JOIN UserRole R ON UPR.RoleId = R.RoleId " +
@@ -56,19 +52,26 @@ public User getLoggedInUser() {
             psts.setInt(1, userId);
             ResultSet resultSet = psts.executeQuery();
             while (resultSet.next()) {
+                String description = resultSet.getString("Description");
+                Date deadline = resultSet.getDate("Deadline");
                 int projectId = resultSet.getInt("projectId");
                 String projectName = resultSet.getString("projectName");
                 String roleTitle = resultSet.getString("RoleTitle");
                 int totalHours = resultSet.getInt("TotalHours");
-                Date deadline = resultSet.getDate("Deadline");
 
                 Project project = new Project(projectName);
 
+                project.setDescription(description);
                 project.setDeadline(deadline);
                 project.setProjectId(projectId);
                 project.setUserRole(roleTitle);
                 project.setHours(totalHours);
-                projects.add(project);
+
+                boolean isArchived = resultSet.getBoolean("isArchived");
+                project.setArchived(isArchived);
+
+                if (project.isArchived() == archived){
+                projects.add(project);}
             }
         } catch (SQLException e) {
             System.out.println("Database not connected");
@@ -110,17 +113,29 @@ public User getLoggedInUser() {
         return subprojects;
     }
 
-    public void addNewProject(Project newProject) {
+    public void addNewProject(Project newProject, int projectLeadId) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String sql = "INSERT INTO Project (ProjectName) VALUES (?)";
-            PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            pstmt.setString(1, newProject.getProjectName());
-            pstmt.executeUpdate();
+            con.setAutoCommit(false);
 
-            ResultSet rs = pstmt.getGeneratedKeys();
-            if (rs.next()) {
-                int projectId = rs.getInt(1);
-                newProject.setProjectId(projectId);
+            String sql = "INSERT INTO Project (ProjectName, description, Deadline) VALUES (?, ?, ?)";
+            try (PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                pstmt.setString(1, newProject.getProjectName());
+                pstmt.setString(2, newProject.getDescription());
+                pstmt.setDate(3, new java.sql.Date(newProject.getDeadline().getTime()));
+                pstmt.executeUpdate();
+
+                try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        int projectId = rs.getInt(1);
+                        newProject.setProjectId(projectId);
+                    }
+                }
+                insertUserProjectRole(con, projectLeadId, newProject.getProjectId(), 2);
+                insertUserProjectRole(con, 1, newProject.getProjectId(), 1);
+                con.commit();
+            } catch (SQLException e) {
+                con.rollback();
+                throw e;
             }
         } catch (SQLException e) {
             System.out.println("Error adding new project");
@@ -128,26 +143,69 @@ public User getLoggedInUser() {
         }
     }
 
-
+    private void insertUserProjectRole(Connection con, int userId, int projectId, int roleId) throws SQLException {
+        String junctionSql = "INSERT INTO User_Project_Role (UserId, ProjectId, RoleId) VALUES (?, ?, ?)";
+        try (PreparedStatement junctionPstmt = con.prepareStatement(junctionSql)) {
+            junctionPstmt.setInt(1, userId);
+            junctionPstmt.setInt(2, projectId);
+            junctionPstmt.setInt(3, roleId);
+            junctionPstmt.executeUpdate();
+        }
+    }
     public Project getProject(int projectId) {
         Project project = null;
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String sql = "SELECT * FROM Project WHERE projectId = ?";
+            String sql = "SELECT * FROM Project WHERE ProjectId = ?";
             PreparedStatement psts = con.prepareStatement(sql);
             psts.setInt(1, projectId);
             ResultSet resultSet = psts.executeQuery();
+
             if (resultSet.next()) {
+                String description = resultSet.getString("description");
+                Date deadline = resultSet.getDate("Deadline");
                 String projectName = resultSet.getString("ProjectName");
+                boolean isArchived = resultSet.getBoolean("isArchived");
+
                 project = new Project(projectName);
+
+                project.setDescription(description);
+                project.setDeadline(deadline);
+                project.setArchived(isArchived);
                 project.setProjectId(projectId);
             }
         } catch (SQLException e) {
-            System.out.println("Project not located");
+            System.out.println("Error retrieving project");
             e.printStackTrace();
-          }
+        }
         return project;
     }
 
+    public void updateProject(Project updatedProject) {
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String updateProjectSql = "UPDATE Project SET ProjectName = ?, Description = ?, Deadline = ? WHERE ProjectId = ?";
+            PreparedStatement pstmt = con.prepareStatement(updateProjectSql);
+            pstmt.setString(1, updatedProject.getProjectName());
+            pstmt.setString(2, updatedProject.getDescription());
+            pstmt.setDate(3, new java.sql.Date(updatedProject.getDeadline().getTime()));
+            pstmt.setInt(4, updatedProject.getProjectId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error updating project");
+            e.printStackTrace();
+        }
+    }
+
+    public void archiveProject(int projectId, boolean isArchived) {
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String sql = "UPDATE Project SET isArchived = ? WHERE ProjectId = ?";
+            PreparedStatement psts = con.prepareStatement(sql);
+            psts.setBoolean(1, isArchived);
+            psts.setInt(2, projectId);
+            psts.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public SubProject getSubProject(int subProjectId) {
         SubProject subProject = null;
@@ -194,7 +252,6 @@ public User getLoggedInUser() {
         }
     }
     public void updateSubProject(SubProject updatedSubProject) {
-        System.out.println("Updating SubProject: " + updatedSubProject.getProjectId() + ", " + updatedSubProject.getProjectName());
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
             String updateSubProjectSql = "UPDATE Subproject SET SubprojectName = ? WHERE SubprojectId = ?";
             PreparedStatement pstmt = con.prepareStatement(updateSubProjectSql);

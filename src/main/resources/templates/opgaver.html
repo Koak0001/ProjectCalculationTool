@@ -6,14 +6,14 @@
 </head>
 <body>
 <h3 th:if="${tasks.isEmpty()}" th:text="'Ingen opgaver fundet. Opret opgaver for projektet ' + ${subProjectName}"></h3>
-<div>
+<div th:if="${!archived}">
     <a th:if="${#strings.equalsIgnoreCase(role, 'projektleder') || #strings.equalsIgnoreCase(role, 'udvikler')}" th:href="@{'/oversigt/' + ${subProjectName} + '/opret_opgave' +'?subProjectName=' +${subProjectName} +'&parentProjectId=' +${subProjectId}}">Tilføj opgave.</a>
     <br>
     <a th:if="${#strings.equalsIgnoreCase(role, 'projektleder') || #strings.equalsIgnoreCase(role, 'udvikler')}" th:href="@{'/oversigt/' + ${subProjectName} + '/rediger_delprojekt/'+ ${subProjectId} +'?subProjectId=' +${subProjectId}}">Rediger delprojekt.</a>
 </div>
 <div th:if="${tasks != null}" th:each="task : ${tasks}" class="task-list">
     <h4 th:text="${task.taskName}"></h4>
-    <a th:href="@{'/oversigt/' + ${subProjectName} + '/' + ${task.taskName} +'?subProjectId=' + ${subProjectId} + '&taskId='+ ${task.taskId} + '&userRole=' + ${role}}" class="task-button">Se opgave!</a>
+    <a th:href="@{'/oversigt/' + ${subProjectName} + '/' + ${task.taskName} +'?subProjectId=' + ${subProjectId} + '&taskId='+ ${task.taskId} + '&userRole=' + ${role} + '&archived=' +${archived}}" class="task-button">Se opgave!</a>
 
     <p th:text="${task.hours}"></p>
 
