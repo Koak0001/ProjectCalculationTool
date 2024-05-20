@@ -80,6 +80,11 @@ public class ProjectController {
         projectService.archiveProject(projectId, isArchived);
         return "redirect:/oversigt/arkiv";
     }
+    @PostMapping("/slet_projekt/{projectName}")
+    public String deleteProject(@RequestParam int projectId) {
+        projectService.deleteProject(projectId);
+        return "redirect:/oversigt/arkiv";
+    }
 
     //   View project with subprojects
     @GetMapping("/{projectName}")

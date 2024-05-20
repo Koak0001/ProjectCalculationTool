@@ -19,8 +19,10 @@ public class ProjectService {
     public void addProject(Project project, int projectLeadId) {projectRepository.addNewProject(project, projectLeadId);}
     public void updateProject(Project project) {projectRepository.updateProject(project);}
     public void archiveProject(int projectId, boolean isArchived) {projectRepository.archiveProject(projectId,isArchived);}
+    public void deleteProject(int projectId) {projectRepository.deleteProject(projectId);}
     public Project getProject (int projectId) {return projectRepository.getProject(projectId);}
     public List<Project> getProjects(int userId, boolean archived) {return projectRepository.getProjects(userId, archived);}
+
 
     //  SubProject calls
     public void addSubProject(SubProject subProject, int parent) {projectRepository.addNewSubProject(subProject, parent);}

@@ -206,6 +206,44 @@ public class ProjectRepository {
             e.printStackTrace();
         }
     }
+    public void deleteProject(int projectId) {
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            // Delete from User_Project_Role junction table
+            String uprJunctionSql = "DELETE FROM User_Project_Role WHERE ProjectId = ?";
+            PreparedStatement uprJunctionPs = con.prepareStatement(uprJunctionSql);
+            uprJunctionPs.setInt(1, projectId);
+            uprJunctionPs.executeUpdate();
+            // Delete from Subproject_Task junction table
+            String stJunctionSql = "DELETE FROM Subproject_Task WHERE SubprojectId IN (SELECT SubprojectId FROM Project_Subproject WHERE ProjectId = ?)";
+            PreparedStatement stPs = con.prepareStatement(stJunctionSql);
+            stPs.setInt(1, projectId);
+            stPs.executeUpdate();
+            // Delete from Task table
+            String taskSql = "DELETE FROM Task WHERE TaskId IN (SELECT TaskId FROM Subproject_Task WHERE SubprojectId IN " +
+                    "(SELECT SubprojectId FROM Project_Subproject WHERE ProjectId=?))";
+            PreparedStatement itemListPstmt = con.prepareStatement(taskSql);
+            itemListPstmt.setInt(1, projectId);
+            itemListPstmt.executeUpdate();
+            // Delete from Project_Subproject table
+            String psSql = "DELETE FROM Project_Subproject WHERE ProjectId = ?";
+            PreparedStatement psPs = con.prepareStatement(psSql);
+            psPs.setInt(1, projectId);
+            psPs.executeUpdate();
+            // Delete from Subproject table
+            String spSql = "DELETE FROM Subproject WHERE SubprojectId IN (SELECT SubprojectId FROM Project_Subproject WHERE ProjectId = ?)";
+            PreparedStatement spPs = con.prepareStatement(spSql);
+            spPs.setInt(1, projectId);
+            spPs.executeUpdate();
+            // Delete from Project table
+            String pSql = "DELETE FROM Project WHERE ProjectId = ?)";
+            PreparedStatement pPs = con.prepareStatement(pSql);
+            pPs.setInt(1, projectId);
+            pPs.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error deleting project");
+            e.printStackTrace();
+        }
+    }
 
     public SubProject getSubProject(int subProjectId) {
         SubProject subProject = null;
@@ -424,6 +462,7 @@ public class ProjectRepository {
         } catch (SQLException e) {
             System.out.println("Database connection error");
             e.printStackTrace();
+
         }
         return user;
     }
