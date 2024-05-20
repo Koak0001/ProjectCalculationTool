@@ -22,10 +22,8 @@ public class ProjectRepository {
     String dbPassword;
 
     private User loggedInUser = new User();
-  //    TODO  - logout
-//    TODO  - getUsers
 
-  
+  //    TODO  - logout
   
  public void login(String username, String password) {
     User user = checkUser(username, password);
@@ -320,4 +318,57 @@ public User getLoggedInUser() {
             e.printStackTrace();
         }
     }
+
+    public List<User> getUsers() {
+        List<User> users = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String sql = "SELECT * FROM User";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet resultSet = ps.executeQuery();
+            while (resultSet.next()) {
+                int userId = resultSet.getInt("UserId");
+                String email = resultSet.getString("Email");
+                String country = resultSet.getString("Country");
+                String username = resultSet.getString("UserName");
+
+                User newUser = new User();
+                newUser.setUserId(userId);
+                newUser.setEmail(email);
+                newUser.setCountry(country);
+                newUser.setUsername(username);
+
+                users.add(newUser);
+            }
+        } catch (SQLException e) {
+            System.out.println("Database connection error");
+            e.printStackTrace();
+        }
+        return users;
+    }
+
+    public User getUser(int userId) {
+        User user = null;
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String sql = "SELECT * FROM User WHERE UserId = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, userId);
+            ResultSet resultSet = ps.executeQuery();
+            if (resultSet.next()) {
+                String email = resultSet.getString("Email");
+                String country = resultSet.getString("Country");
+                String username = resultSet.getString("UserName");
+
+                user = new User();
+                user.setUserId(userId);
+                user.setEmail(email);
+                user.setCountry(country);
+                user.setUsername(username);
+            }
+        } catch (SQLException e) {
+            System.out.println("Database connection error");
+            e.printStackTrace();
+        }
+        return user;
+    }
+
 }

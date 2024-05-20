@@ -177,10 +177,28 @@ public class ProjectController {
             return "redirect:/oversigt/projekter";
         }
 
+        @GetMapping("/alle_brugere")
+        public String getAllUsers( Model model) {
+            List<User> users = projectService.getUsers();
+            model.addAttribute("users", users);
+            return "users";
+        }
+
+        @GetMapping("/bruger/{userId}")
+        public String getUser(@PathVariable("userId") int userId, Model model) {
+            User user = projectService.getUser(userId);
+        if (user != null) {
+            model.addAttribute("user", user);
+            return "user";
+        } else {
+            return "user-not-found";
+        }
+    }
+
+
 //    TODO Add collaborator/Set role
 //    TODO View collaborators
 //    TODO Edit collaborator
-//    TODO View site users
 //    TODO Edit site users
     }
 
