@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>${projectName}</title>
+    <title th:text="${project.projectName}"></title>
 </head>
 <body>
 <form method="post" th:action="@{'/oversigt/'+ ${projectName} + '/rediger_projekt'}" >

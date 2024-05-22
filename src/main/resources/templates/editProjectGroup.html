@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Projektgruppe</title>
+</head>
+<h4 th:text="${'Rediger_projektgruppen for ' + project.projectName}"></h4>
+<body>
+
+<br>
+
+<a  th:href="@{'/oversigt/' + ${project.projectName} + '/tilfoej_medlem' +'?projectId=' + ${project.projectId}}">Tilføj personale til projektgruppen </a>
+
+<br>
+
+<h4>Gruppens medlemmer</h4>
+<div th:each="user : ${users}" class="user-list">
+    <p th:text="'Navn: ' + ${user.userName}"></p>
+    <p th:text="'Email: ' + ${user.email}"></p>
+    <p th:text="'Land: ' + ${user.country}"></p>
+    <p th:text="'Projektrolle: ' + ${user.projectRole}"></p>
+    <br>
+    <a th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projektgruppe/' + ${user.userName} + '?projectId=' + ${project.projectId} + '&userId=' + ${user.userId}}" class="user-button">Rediger tilladelser</a>
+</div>
+</body>
+</html>

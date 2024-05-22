@@ -8,6 +8,8 @@
 <div th:if="${project != null && !project.isArchived() &&  #strings.equalsIgnoreCase(role, 'projektleder')}">
     <a  th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projekt/' + ${project.projectId} +'?projectId=' + ${project.projectId}}">Rediger projekt</a>
     <br>
+    <a  th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projektgruppe' +'?projectId=' + ${project.projectId}}">Rediger projektgruppens medlemmer</a>
+    <br>
     <a th:href="@{'/oversigt/' + ${project.projectName} + '/opret_delprojekt' +'?projectName=' + ${project.projectName} +'&parentProjectId=' + ${project.projectId}}">Tilføj delprojekt</a>
 </div>
 <form th:if="${#strings.equalsIgnoreCase(role, 'projektleder')}" th:action="@{/oversigt/arkiver_projekt}" method="post">

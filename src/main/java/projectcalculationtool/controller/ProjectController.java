@@ -32,8 +32,8 @@ public class ProjectController {
 
 
     @PostMapping(value = "/check-login")
-    public String checkLogin(@RequestParam("username") String username, @RequestParam("password") String password, HttpServletRequest request, Model model) {
-        projectService.login(username, password);
+    public String checkLogin(@RequestParam("username") String userName, @RequestParam("password") String password, HttpServletRequest request, Model model) {
+        projectService.login(userName, password);
         if (projectService.getLoggedInUser() != null) {
             HttpSession session = request.getSession();
             session.setAttribute("userId", projectService.getLoggedInUser().getUserId());
@@ -63,6 +63,7 @@ public class ProjectController {
         int userId = user.getUserId();
         List<Project> projects = projectService.getProjects(userId, false);
         model.addAttribute("projects", projects);
+        model.addAttribute("user", user);
         return "projekter";
 
     }
@@ -222,18 +223,57 @@ public class ProjectController {
         @GetMapping("/bruger/{userId}")
         public String getUser(@PathVariable("userId") int userId, Model model) {
             User user = projectService.getUser(userId);
-        if (user != null) {
-            model.addAttribute("user", user);
-            return "user";
-        } else {
-            return "user-not-found";
+            if (user != null) {
+                model.addAttribute("user", user);
+                return "user";
+            } else {
+                return "user-not-found";
+            }
         }
+
+    @GetMapping("{ProjectName}/tilfoej_medlem")
+    public String getAvailableUsers(@RequestParam int projectId, Model model){
+        List<User> users = projectService.getAvailableUsers(projectId);
+        Project project = projectService.getProject(projectId);
+        model.addAttribute("project", project);
+        model.addAttribute("users", users);
+        return "addMemberToProject";
+    }
+    @PostMapping("{ProjectName}/tilfoej_medlem")
+    public String addCollaborator(@RequestParam int projectId, @RequestParam int userId, @RequestParam int roleValue){
+        projectService.addUserToProject(userId, projectId, roleValue);
+        return "redirect:/oversigt/projekter";
+    }
+
+    @GetMapping("{ProjectName}/rediger_projektgruppe")
+    public String getCollaborators(@RequestParam int projectId, Model model) {
+        List<User> users = projectService.getAssociatedUsers(projectId);
+        Project project = projectService.getProject(projectId);
+        model.addAttribute("project", project);
+        model.addAttribute("users", users);
+        return "editProjectGroup";
+    }
+
+    @GetMapping("{ProjectName}/rediger_projektgruppe/{userName}")
+    public String editCollaborator(@RequestParam int projectId, @RequestParam int userId, Model model){
+        User user = projectService.getUser(userId);
+        Project project = projectService.getProject(projectId);
+        model.addAttribute("user", user);
+        model.addAttribute("project", project);
+        return "editCollaborator";
+    }
+    @PostMapping("{projectName}/rediger_projektgruppe/{userName}")
+    public String updateUserRole(@RequestParam int projectId,
+                                 @RequestParam int userId,
+                                 @RequestParam int roleValue) {
+        projectService.updateCollaboratorRole(projectId, userId, roleValue);
+        return "redirect:/oversigt/projekter";
     }
 
 
-//    TODO Add collaborator/Set role
-//    TODO View collaborators
-//    TODO Edit collaborator
+
+
+
 //    TODO Edit site users
     }
 

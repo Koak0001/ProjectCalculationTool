@@ -23,16 +23,17 @@ public class ProjectRepository {
 
     private User loggedInUser = new User();
 
-//  TODO  - logout
-    public void login(String username, String password) {
-    User user = checkUser(username, password);
-    if (user != null) {
-       this.loggedInUser = user;}
+    //  TODO  - logout
+    public void login(String userName, String password) {
+        User user = checkUser(userName, password);
+        if (user != null) {
+            this.loggedInUser = user;
+        }
     }
 
     public User getLoggedInUser() {
-    return loggedInUser;
-}
+        return loggedInUser;
+    }
 
     public List<Project> getProjects(int userId, boolean archived) {
         List<Project> projects = new ArrayList<>();
@@ -70,8 +71,9 @@ public class ProjectRepository {
                 boolean isArchived = resultSet.getBoolean("isArchived");
                 project.setArchived(isArchived);
 
-                if (project.isArchived() == archived){
-                projects.add(project);}
+                if (project.isArchived() == archived) {
+                    projects.add(project);
+                }
             }
         } catch (SQLException e) {
             System.out.println("Database not connected");
@@ -152,6 +154,16 @@ public class ProjectRepository {
             junctionPstmt.executeUpdate();
         }
     }
+
+    public void addUserToProject(int userId, int projectId, int roleId) {
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            insertUserProjectRole(con, userId, projectId, roleId);
+
+        } catch (SQLException e) {
+            System.out.println("Error adding user to project");
+            e.printStackTrace();
+        }
+    }
     public Project getProject(int projectId) {
         Project project = null;
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
@@ -206,39 +218,58 @@ public class ProjectRepository {
             e.printStackTrace();
         }
     }
+
     public void deleteProject(int projectId) {
+
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            try (Statement stmt = con.createStatement()) {
+                stmt.execute("SET FOREIGN_KEY_CHECKS = 0");
+                stmt.execute("SET SQL_SAFE_UPDATES = 0");
+            }
             // Delete from User_Project_Role junction table
             String uprJunctionSql = "DELETE FROM User_Project_Role WHERE ProjectId = ?";
             PreparedStatement uprJunctionPs = con.prepareStatement(uprJunctionSql);
             uprJunctionPs.setInt(1, projectId);
             uprJunctionPs.executeUpdate();
             // Delete from Subproject_Task junction table
-            String stJunctionSql = "DELETE FROM Subproject_Task WHERE SubprojectId IN (SELECT SubprojectId FROM Project_Subproject WHERE ProjectId = ?)";
-            PreparedStatement stPs = con.prepareStatement(stJunctionSql);
-            stPs.setInt(1, projectId);
-            stPs.executeUpdate();
+            String stJunctionSql = "DELETE st FROM Subproject_Task st " +
+                    "JOIN Project_Subproject ps ON st.SubprojectId = ps.SubprojectId " +
+                    "WHERE ps.ProjectId = ?";
+            PreparedStatement stJunctionPs = con.prepareStatement(stJunctionSql);
+            stJunctionPs.setInt(1, projectId);
+            stJunctionPs.executeUpdate();
+
             // Delete from Task table
-            String taskSql = "DELETE FROM Task WHERE TaskId IN (SELECT TaskId FROM Subproject_Task WHERE SubprojectId IN " +
-                    "(SELECT SubprojectId FROM Project_Subproject WHERE ProjectId=?))";
-            PreparedStatement itemListPstmt = con.prepareStatement(taskSql);
-            itemListPstmt.setInt(1, projectId);
-            itemListPstmt.executeUpdate();
+            String taskSql = "DELETE t FROM Task t " +
+                    "JOIN Subproject_Task st ON t.TaskId = st.TaskId " +
+                    "JOIN Project_Subproject ps ON st.SubprojectId = ps.SubprojectId " +
+                    "WHERE ps.ProjectId = ?";
+            PreparedStatement taskPs = con.prepareStatement(taskSql);
+            taskPs.setInt(1, projectId);
+            taskPs.executeUpdate();
+
             // Delete from Project_Subproject table
             String psSql = "DELETE FROM Project_Subproject WHERE ProjectId = ?";
-            PreparedStatement psPs = con.prepareStatement(psSql);
-            psPs.setInt(1, projectId);
-            psPs.executeUpdate();
+            PreparedStatement psJunctionPs = con.prepareStatement(psSql);
+            psJunctionPs.setInt(1, projectId);
+            psJunctionPs.executeUpdate();
             // Delete from Subproject table
-            String spSql = "DELETE FROM Subproject WHERE SubprojectId IN (SELECT SubprojectId FROM Project_Subproject WHERE ProjectId = ?)";
-            PreparedStatement spPs = con.prepareStatement(spSql);
-            spPs.setInt(1, projectId);
-            spPs.executeUpdate();
+            String spSql = "DELETE sp FROM Subproject sp " +
+                    "JOIN Project_Subproject ps ON sp.SubprojectId = ps.SubprojectId " +
+                    "WHERE ps.ProjectId = ?";
+            PreparedStatement subProjectPs = con.prepareStatement(spSql);
+            subProjectPs.setInt(1, projectId);
+            subProjectPs.executeUpdate();
+
             // Delete from Project table
-            String pSql = "DELETE FROM Project WHERE ProjectId = ?)";
-            PreparedStatement pPs = con.prepareStatement(pSql);
-            pPs.setInt(1, projectId);
-            pPs.executeUpdate();
+            String pSql = "DELETE FROM Project WHERE ProjectId = ?";
+            PreparedStatement projectPs = con.prepareStatement(pSql);
+            projectPs.setInt(1, projectId);
+            projectPs.executeUpdate();
+            try (Statement stmt = con.createStatement()) {
+                stmt.execute("SET SQL_SAFE_UPDATES = 1");
+                stmt.execute("SET FOREIGN_KEY_CHECKS = 1");
+            }
         } catch (SQLException e) {
             System.out.println("Error deleting project");
             e.printStackTrace();
@@ -289,6 +320,7 @@ public class ProjectRepository {
             e.printStackTrace();
         }
     }
+
     public void updateSubProject(SubProject updatedSubProject) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
             String updateSubProjectSql = "UPDATE Subproject SET SubprojectName = ? WHERE SubprojectId = ?";
@@ -329,17 +361,17 @@ public class ProjectRepository {
     }
 
 
-    public User checkUser(String username, String password) {
+    public User checkUser(String userName, String password) {
         User userLoggedIn = null;
         try (Connection connection = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String sql = "SELECT * FROM User WHERE username=? AND UserPassword=?";
+            String sql = "SELECT * FROM User WHERE userName=? AND UserPassword=?";
             PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, username);
+            ps.setString(1, userName);
             ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 int userId = rs.getInt("userId");
-                userLoggedIn = new User(username, password);
+                userLoggedIn = new User(userName, password);
                 userLoggedIn.setUserId(userId);
             }
         } catch (SQLException e) {
@@ -349,7 +381,7 @@ public class ProjectRepository {
         return userLoggedIn;
     }
 
-  public List<Task> getTasks(int subProjectId, String userRole) {
+    public List<Task> getTasks(int subProjectId, String userRole) {
         List<Task> tasks = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
             String sql = "SELECT T.TaskId, T.TaskName, T.Hours " +
@@ -395,9 +427,9 @@ public class ProjectRepository {
         } catch (SQLException e) {
             System.out.println("Task not located");
             e.printStackTrace();
-    }
+        }
         return task;
-}
+    }
 
 
     public void updateTask(Task updatedTask) {
@@ -424,13 +456,13 @@ public class ProjectRepository {
                 int userId = resultSet.getInt("UserId");
                 String email = resultSet.getString("Email");
                 String country = resultSet.getString("Country");
-                String username = resultSet.getString("UserName");
+                String userName = resultSet.getString("UserName");
 
                 User newUser = new User();
                 newUser.setUserId(userId);
                 newUser.setEmail(email);
                 newUser.setCountry(country);
-                newUser.setUsername(username);
+                newUser.setUserName(userName);
 
                 users.add(newUser);
             }
@@ -451,13 +483,13 @@ public class ProjectRepository {
             if (resultSet.next()) {
                 String email = resultSet.getString("Email");
                 String country = resultSet.getString("Country");
-                String username = resultSet.getString("UserName");
+                String UserName = resultSet.getString("UserName");
 
                 user = new User();
                 user.setUserId(userId);
                 user.setEmail(email);
                 user.setCountry(country);
-                user.setUsername(username);
+                user.setUserName(UserName);
             }
         } catch (SQLException e) {
             System.out.println("Database connection error");
@@ -467,4 +499,79 @@ public class ProjectRepository {
         return user;
     }
 
+    public List<User> getAvailableUsers(int projectId) {
+        List<User> availableUsers = new ArrayList<>();
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String sql = "SELECT * FROM User u WHERE NOT EXISTS (SELECT 1 FROM User_Project_Role upr " +
+                    "WHERE upr.UserId = u.UserId AND upr.ProjectId = ?)";
+            PreparedStatement psts = con.prepareStatement(sql);
+            psts.setInt(1, projectId);
+            ResultSet resultSet = psts.executeQuery();
+            while (resultSet.next()) {
+                int userId = resultSet.getInt("UserId");
+                String userName = resultSet.getString("UserName");
+                String email = resultSet.getString("Email");
+                String country = resultSet.getString("Country");
+
+                User user = new User();
+
+                user.setUserId(userId);
+                user.setUserName(userName);
+                user.setEmail(email);
+                user.setCountry(country);
+                availableUsers.add(user);
+            }
+        } catch (SQLException e) {
+            System.out.println("Available users not located");
+            e.printStackTrace();
+        }
+        return availableUsers;
+    }
+
+    public List<User> getAssociatedUsers(int projectId) {
+        List<User> associatedUsers = new ArrayList<>();
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String sql = "SELECT u.*, ur.RoleTitle FROM User u " +
+                    "JOIN User_Project_Role upr ON u.UserId = upr.UserId " +
+                    "JOIN UserRole ur ON upr.RoleId = ur.RoleId " +
+                    "WHERE upr.ProjectId = ?";
+            PreparedStatement psts = con.prepareStatement(sql);
+            psts.setInt(1, projectId);
+            ResultSet resultSet = psts.executeQuery();
+            while (resultSet.next()) {
+                int userId = resultSet.getInt("UserId");
+                String userName = resultSet.getString("UserName");
+                String email = resultSet.getString("Email");
+                String country = resultSet.getString("Country");
+                String roleTitle = resultSet.getString("RoleTitle");
+
+                User user = new User();
+
+                user.setUserId(userId);
+                user.setUserName(userName);
+                user.setEmail(email);
+                user.setCountry(country);
+                user.setProjectRole(roleTitle);
+                associatedUsers.add(user);
+            }
+        } catch (SQLException e) {
+            System.out.println("Items not located");
+            e.printStackTrace();
+        }
+        return associatedUsers;
+    }
+    public void updateCollaboratorRole(int projectId, int userId, int roleId) {
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String updateRoleSql = "UPDATE User_Project_Role SET RoleId = ? WHERE ProjectId = ? AND UserId = ?";
+            PreparedStatement psts = con.prepareStatement(updateRoleSql);
+            psts.setInt(1, roleId);
+            psts.setInt(2, projectId);
+            psts.setInt(3, userId);
+            int rowsUpdated = psts.executeUpdate();
+            System.out.println("Rows updated: " + rowsUpdated);
+        } catch (SQLException e) {
+            System.out.println("Error updating user role");
+            e.printStackTrace();
+        }
+    }
 }

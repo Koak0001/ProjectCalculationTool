@@ -37,10 +37,14 @@ public class ProjectService {
     public List<Task> getTasks(int projectId, String role) {return projectRepository.getTasks(projectId, role);}
 
     // User calls and functionality
-    public void login(String username, String password) {projectRepository.login(username, password);}
+    public void login(String UserName, String password) {projectRepository.login(UserName, password);}
+    public void addUserToProject(int userId, int projectId, int roleId) {projectRepository.addUserToProject(userId, projectId, roleId);}
+    public void updateCollaboratorRole(int projectId, int userId, int roleId) {projectRepository.updateCollaboratorRole(projectId, userId, roleId);}
     public User getLoggedInUser() {return projectRepository.getLoggedInUser();}
-    public List<User> getUsers() {return projectRepository.getUsers();}
     public User getUser(int userId) {return projectRepository.getUser(userId);}
+    public List<User> getUsers() {return projectRepository.getUsers();}
+    public List<User> getAvailableUsers(int projectId) {return projectRepository.getAvailableUsers(projectId);}
+    public List<User> getAssociatedUsers(int projectId) {return projectRepository.getAssociatedUsers(projectId);}
 
 
 //    TODO - Call editUser
