@@ -7,8 +7,13 @@ public class User {
     String projectRole;
     private String password;
     private String userName;
+
+
+
+    private int roleId;
     boolean isAdmin;
     boolean isProjectLead;
+
     int userId;
 
 
@@ -40,8 +45,8 @@ public class User {
     public void setProjectLead(boolean projectLead) {this.isProjectLead = projectLead;}
     public void setUserId(int userId) {this.userId = userId;}
     public String getProjectRole() {return projectRole;}
-    public void setProjectRole(String projectRole) {
-        this.projectRole = projectRole;
-    }
+    public void setProjectRole(String projectRole) {this.projectRole = projectRole;}
+    public int getRoleId() {return roleId;}
+    public void setRoleId(int roleId) {this.roleId = roleId;}
 }
 

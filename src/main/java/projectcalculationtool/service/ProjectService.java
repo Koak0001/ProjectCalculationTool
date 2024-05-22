@@ -40,6 +40,7 @@ public class ProjectService {
     public void login(String UserName, String password) {projectRepository.login(UserName, password);}
     public void addUserToProject(int userId, int projectId, int roleId) {projectRepository.addUserToProject(userId, projectId, roleId);}
     public void updateCollaboratorRole(int projectId, int userId, int roleId) {projectRepository.updateCollaboratorRole(projectId, userId, roleId);}
+    public void removeCollaborator(int userId, int projectId, int roleId) {projectRepository.removeCollaborator(userId,projectId,roleId);}
     public User getLoggedInUser() {return projectRepository.getLoggedInUser();}
     public User getUser(int userId) {return projectRepository.getUser(userId);}
     public List<User> getUsers() {return projectRepository.getUsers();}

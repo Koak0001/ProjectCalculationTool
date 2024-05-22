@@ -270,6 +270,12 @@ public class ProjectController {
         return "redirect:/oversigt/projekter";
     }
 
+    @PostMapping("{projectName}/fjern_bruger")
+    public String removeCollaborator(@RequestParam int userId, @RequestParam int projectId, @RequestParam int roleId) {
+        projectService.removeCollaborator(userId, projectId, roleId);
+        return "redirect:/oversigt/projekter";
+    }
+
 
 
 

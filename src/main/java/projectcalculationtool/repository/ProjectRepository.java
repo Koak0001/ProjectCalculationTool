@@ -531,7 +531,7 @@ public class ProjectRepository {
     public List<User> getAssociatedUsers(int projectId) {
         List<User> associatedUsers = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String sql = "SELECT u.*, ur.RoleTitle FROM User u " +
+            String sql = "SELECT u.*, ur.* FROM User u " +
                     "JOIN User_Project_Role upr ON u.UserId = upr.UserId " +
                     "JOIN UserRole ur ON upr.RoleId = ur.RoleId " +
                     "WHERE upr.ProjectId = ?";
@@ -544,6 +544,7 @@ public class ProjectRepository {
                 String email = resultSet.getString("Email");
                 String country = resultSet.getString("Country");
                 String roleTitle = resultSet.getString("RoleTitle");
+                int roleId = resultSet.getInt("RoleId");
 
                 User user = new User();
 
@@ -552,10 +553,11 @@ public class ProjectRepository {
                 user.setEmail(email);
                 user.setCountry(country);
                 user.setProjectRole(roleTitle);
+                user.setRoleId(roleId);
                 associatedUsers.add(user);
             }
         } catch (SQLException e) {
-            System.out.println("Items not located");
+            System.out.println("Users not located");
             e.printStackTrace();
         }
         return associatedUsers;
@@ -567,10 +569,24 @@ public class ProjectRepository {
             psts.setInt(1, roleId);
             psts.setInt(2, projectId);
             psts.setInt(3, userId);
-            int rowsUpdated = psts.executeUpdate();
-            System.out.println("Rows updated: " + rowsUpdated);
         } catch (SQLException e) {
             System.out.println("Error updating user role");
+            e.printStackTrace();
+        }
+    }
+
+    public void removeCollaborator(int userId, int projectId, int roleId) {
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+
+            String deleteUprSql = "DELETE FROM User_Project_Role WHERE userId = ? AND projectId = ? AND RoleId = ?";
+            PreparedStatement deleteUprPs = con.prepareStatement(deleteUprSql);
+            deleteUprPs.setInt(1, userId);
+            deleteUprPs.setInt(2, projectId);
+            deleteUprPs.setInt(3, roleId);
+
+            deleteUprPs.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error deleting set from UPR");
             e.printStackTrace();
         }
     }

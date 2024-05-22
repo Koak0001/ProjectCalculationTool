@@ -21,6 +21,9 @@
     <p th:text="'Projektrolle: ' + ${user.projectRole}"></p>
     <br>
     <a th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projektgruppe/' + ${user.userName} + '?projectId=' + ${project.projectId} + '&userId=' + ${user.userId}}" class="user-button">Rediger tilladelser</a>
+    <form th:action="@{'/oversigt/' + ${project.projectName} +'/fjern_bruger' +'?userId=' + ${user.userId} +'&projectId=' + ${project.projectId} + '&roleId='+ ${user.roleId}}" method="post">
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Fjern bruger fra projektgruppen?')">Fjern fra projektgruppen</button>
+    </form>
 </div>
 </body>
 </html>
