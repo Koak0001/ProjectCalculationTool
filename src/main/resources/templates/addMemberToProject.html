@@ -8,7 +8,7 @@
 <div th:each="user : ${users}" class="user-list">
     <p th:text="'Username: ' + ${user.userName}"></p>
     <p th:text="'Email: ' + ${user.email}"></p>
-    <p th:text="'Country: ' + ${user.country}"></p>
+    <p th:text="'Country: ' + ${user.location}"></p>
     <a th:href="@{'/oversigt/bruger/' + ${user.userId}}" class="user-button">Se Bruger</a>
     <br>
     <br>

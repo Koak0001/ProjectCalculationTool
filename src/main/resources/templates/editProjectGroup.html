@@ -17,7 +17,7 @@
 <div th:each="user : ${users}" class="user-list">
     <p th:text="'Navn: ' + ${user.userName}"></p>
     <p th:text="'Email: ' + ${user.email}"></p>
-    <p th:text="'Land: ' + ${user.country}"></p>
+    <p th:text="'Land: ' + ${user.location}"></p>
     <p th:text="'Projektrolle: ' + ${user.projectRole}"></p>
     <br>
     <a th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projektgruppe/' + ${user.userName} + '?projectId=' + ${project.projectId} + '&userId=' + ${user.userId}}" class="user-button">Rediger tilladelser</a>

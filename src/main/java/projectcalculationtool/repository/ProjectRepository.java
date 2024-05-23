@@ -24,8 +24,8 @@ public class ProjectRepository {
     private User loggedInUser = new User();
 
     //  TODO  - logout
-    public void login(String userName, String password) {
-        User user = checkUser(userName, password);
+    public void login(String userLogin, String password) {
+        User user = checkUser(userLogin, password);
         if (user != null) {
             this.loggedInUser = user;
         }
@@ -361,18 +361,22 @@ public class ProjectRepository {
     }
 
 
-    public User checkUser(String userName, String password) {
+    public User checkUser(String userLogin, String password) {
         User userLoggedIn = null;
         try (Connection connection = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String sql = "SELECT * FROM User WHERE userName=? AND UserPassword=?";
+            String sql = "SELECT * FROM User WHERE userLogin=? AND UserPassword=?";
             PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, userName);
+            ps.setString(1, userLogin);
             ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 int userId = rs.getInt("userId");
-                userLoggedIn = new User(userName, password);
+                boolean isAdmin = rs.getBoolean("isAdmin");
+                boolean isProjectLead = rs.getBoolean("isProjectLead");
+                userLoggedIn = new User(userLogin, password);
                 userLoggedIn.setUserId(userId);
+                userLoggedIn.setAdmin(isAdmin);
+                userLoggedIn.setProjectLead(isProjectLead);
             }
         } catch (SQLException e) {
             System.out.println("Checking user failed");
@@ -455,14 +459,22 @@ public class ProjectRepository {
             while (resultSet.next()) {
                 int userId = resultSet.getInt("UserId");
                 String email = resultSet.getString("Email");
-                String country = resultSet.getString("Country");
+                String userLogin = resultSet.getString("UserLogin");
+                String userPassword = resultSet.getString("UserPassword");
+                String location = resultSet.getString("Location");
                 String userName = resultSet.getString("UserName");
+                boolean admin = resultSet.getBoolean("isAdmin");
+                boolean projectLead = resultSet.getBoolean("isProjectLead");
 
                 User newUser = new User();
                 newUser.setUserId(userId);
                 newUser.setEmail(email);
-                newUser.setCountry(country);
+                newUser.setLogin(userLogin);
+                newUser.setPassword(userPassword);
                 newUser.setUserName(userName);
+                newUser.setLocation(location);
+                newUser.setAdmin(admin);
+                newUser.setProjectLead(projectLead);
 
                 users.add(newUser);
             }
@@ -482,22 +494,30 @@ public class ProjectRepository {
             ResultSet resultSet = ps.executeQuery();
             if (resultSet.next()) {
                 String email = resultSet.getString("Email");
-                String country = resultSet.getString("Country");
-                String UserName = resultSet.getString("UserName");
+                String login = resultSet.getString("UserLogin");
+                String location = resultSet.getString("Location");
+                String password = resultSet.getString("UserPassword");
+                String userName = resultSet.getString("UserName");
+                boolean isAdmin = resultSet.getBoolean("isAdmin");
+                boolean isProjectLead = resultSet.getBoolean("isProjectLead");
 
                 user = new User();
                 user.setUserId(userId);
                 user.setEmail(email);
-                user.setCountry(country);
-                user.setUserName(UserName);
+                user.setLogin(login);
+                user.setLocation(location);
+                user.setPassword(password);
+                user.setUserName(userName);
+                user.setAdmin(isAdmin);
+                user.setProjectLead(isProjectLead);
             }
         } catch (SQLException e) {
             System.out.println("Database connection error");
             e.printStackTrace();
-
         }
         return user;
     }
+
 
     public List<User> getAvailableUsers(int projectId) {
         List<User> availableUsers = new ArrayList<>();
@@ -511,14 +531,14 @@ public class ProjectRepository {
                 int userId = resultSet.getInt("UserId");
                 String userName = resultSet.getString("UserName");
                 String email = resultSet.getString("Email");
-                String country = resultSet.getString("Country");
+                String location = resultSet.getString("Location");
 
                 User user = new User();
 
                 user.setUserId(userId);
                 user.setUserName(userName);
                 user.setEmail(email);
-                user.setCountry(country);
+                user.setLocation(location);
                 availableUsers.add(user);
             }
         } catch (SQLException e) {
@@ -542,7 +562,7 @@ public class ProjectRepository {
                 int userId = resultSet.getInt("UserId");
                 String userName = resultSet.getString("UserName");
                 String email = resultSet.getString("Email");
-                String country = resultSet.getString("Country");
+                String location = resultSet.getString("Location");
                 String roleTitle = resultSet.getString("RoleTitle");
                 int roleId = resultSet.getInt("RoleId");
 
@@ -551,7 +571,7 @@ public class ProjectRepository {
                 user.setUserId(userId);
                 user.setUserName(userName);
                 user.setEmail(email);
-                user.setCountry(country);
+                user.setLocation(location);
                 user.setProjectRole(roleTitle);
                 user.setRoleId(roleId);
                 associatedUsers.add(user);
@@ -590,4 +610,23 @@ public class ProjectRepository {
             e.printStackTrace();
         }
     }
+    public void updateUser(User updatedUser) {
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String updateUserSql = "UPDATE User SET UserLogin = ?, UserName = ?, UserPassword = ?, isAdmin = ?, isProjectLead = ?, Email = ?, Location = ? WHERE UserId = ?";
+            PreparedStatement pstmt = con.prepareStatement(updateUserSql);
+            pstmt.setString(1, updatedUser.getLogin());
+            pstmt.setString(2, updatedUser.getUserName());
+            pstmt.setString(3, updatedUser.getPassword());
+            pstmt.setBoolean(4, updatedUser.getIsAdmin());
+            pstmt.setBoolean(5, updatedUser.getIsProjectLead());
+            pstmt.setString(6, updatedUser.getEmail());
+            pstmt.setString(7, updatedUser.getLocation());
+            pstmt.setInt(8, updatedUser.getUserId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error updating user");
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -7,7 +7,9 @@
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
-<a th:href="@{/oversigt/nytprojekt}" class="new-btn">Opret nyt projekt</a>
+<a th:if="${user.isProjectLead}" th:href="@{/oversigt/nytprojekt}" class="new-btn">Opret nyt projekt</a>
+<a th:if="${user.isAdmin}" th:href="@{/oversigt/administrator}" class="new-btn">Administrator menu</a>
+
 <h2 class="section-title">Dine Projekter:</h2>
 
 <div th:each="project : ${projects}" class="item-list">
