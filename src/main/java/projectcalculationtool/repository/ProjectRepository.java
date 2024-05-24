@@ -221,62 +221,84 @@ public class ProjectRepository {
         }
     }
 
-    public void deleteProject(int projectId) {
-
+    public void deleteTask(int taskId) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            try (Statement stmt = con.createStatement()) {
-                stmt.execute("SET FOREIGN_KEY_CHECKS = 0");
-                stmt.execute("SET SQL_SAFE_UPDATES = 0");
+
+            String stJunctionSql = "DELETE FROM Subproject_Task WHERE TaskId = ?";
+            PreparedStatement stJunctionPs = con.prepareStatement(stJunctionSql);
+            stJunctionPs.setInt(1, taskId);
+            stJunctionPs.executeUpdate();
+
+            String taskSql = "DELETE FROM Task WHERE TaskId = ?";
+            PreparedStatement taskPs = con.prepareStatement(taskSql);
+            taskPs.setInt(1, taskId);
+            taskPs.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error deleting task with ID: " + taskId);
+            e.printStackTrace();
+        }
+    }
+
+
+    public void deleteTasksForSubproject(int subprojectId) {
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+
+            String selectTasksSql = "SELECT TaskId FROM Subproject_Task WHERE SubprojectId = ?";
+            PreparedStatement selectTasksPs = con.prepareStatement(selectTasksSql);
+            selectTasksPs.setInt(1, subprojectId);
+            ResultSet rs = selectTasksPs.executeQuery();
+
+            // Delete each task associated with the Subproject
+            while (rs.next()) {
+                int taskId = rs.getInt("TaskId");
+                deleteTask(taskId);
             }
-            // Delete from User_Project_Role junction table
+
+            String psJunctionSql = "DELETE FROM Project_Subproject WHERE SubprojectId = ?";
+            PreparedStatement psJunctionPs = con.prepareStatement(psJunctionSql);
+            psJunctionPs.setInt(1, subprojectId);
+            psJunctionPs.executeUpdate();
+
+            String spSql = "DELETE FROM Subproject WHERE SubprojectId = ?";
+            PreparedStatement subProjectPs = con.prepareStatement(spSql);
+            subProjectPs.setInt(1, subprojectId);
+            subProjectPs.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error deleting subproject with ID: " + subprojectId);
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteProject(int projectId) {
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+
+            String selectSubprojectsSql = "SELECT SubprojectId FROM Project_Subproject WHERE ProjectId = ?";
+            PreparedStatement selectSubprojectsPs = con.prepareStatement(selectSubprojectsSql);
+            selectSubprojectsPs.setInt(1, projectId);
+            ResultSet rs = selectSubprojectsPs.executeQuery();
+
+            // Delete each subproject associated with the Project
+            while (rs.next()) {
+                int subprojectId = rs.getInt("SubprojectId");
+                deleteTasksForSubproject(subprojectId);
+            }
+
             String uprJunctionSql = "DELETE FROM User_Project_Role WHERE ProjectId = ?";
             PreparedStatement uprJunctionPs = con.prepareStatement(uprJunctionSql);
             uprJunctionPs.setInt(1, projectId);
             uprJunctionPs.executeUpdate();
-            // Delete from Subproject_Task junction table
-            String stJunctionSql = "DELETE st FROM Subproject_Task st " +
-                    "JOIN Project_Subproject ps ON st.SubprojectId = ps.SubprojectId " +
-                    "WHERE ps.ProjectId = ?";
-            PreparedStatement stJunctionPs = con.prepareStatement(stJunctionSql);
-            stJunctionPs.setInt(1, projectId);
-            stJunctionPs.executeUpdate();
 
-            // Delete from Task table
-            String taskSql = "DELETE t FROM Task t " +
-                    "JOIN Subproject_Task st ON t.TaskId = st.TaskId " +
-                    "JOIN Project_Subproject ps ON st.SubprojectId = ps.SubprojectId " +
-                    "WHERE ps.ProjectId = ?";
-            PreparedStatement taskPs = con.prepareStatement(taskSql);
-            taskPs.setInt(1, projectId);
-            taskPs.executeUpdate();
-
-            // Delete from Project_Subproject table
-            String psSql = "DELETE FROM Project_Subproject WHERE ProjectId = ?";
-            PreparedStatement psJunctionPs = con.prepareStatement(psSql);
-            psJunctionPs.setInt(1, projectId);
-            psJunctionPs.executeUpdate();
-            // Delete from Subproject table
-            String spSql = "DELETE sp FROM Subproject sp " +
-                    "JOIN Project_Subproject ps ON sp.SubprojectId = ps.SubprojectId " +
-                    "WHERE ps.ProjectId = ?";
-            PreparedStatement subProjectPs = con.prepareStatement(spSql);
-            subProjectPs.setInt(1, projectId);
-            subProjectPs.executeUpdate();
-
-            // Delete from Project table
             String pSql = "DELETE FROM Project WHERE ProjectId = ?";
             PreparedStatement projectPs = con.prepareStatement(pSql);
             projectPs.setInt(1, projectId);
             projectPs.executeUpdate();
-            try (Statement stmt = con.createStatement()) {
-                stmt.execute("SET SQL_SAFE_UPDATES = 1");
-                stmt.execute("SET FOREIGN_KEY_CHECKS = 1");
-            }
         } catch (SQLException e) {
-            System.out.println("Error deleting project");
+            System.out.println("Error deleting project with ID: " + projectId);
             e.printStackTrace();
         }
     }
+
+
 
     public SubProject getSubProject(int subProjectId) {
         SubProject subProject = null;
