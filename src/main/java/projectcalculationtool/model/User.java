@@ -1,20 +1,21 @@
 package projectcalculationtool.model;
 
 public class User {
-    String name;
-    String surName;
-    String email;
-    String country;
-    String login;
+    private String userLogin;
+    private String name;
+    private String email;
+    private String location;
+    private String projectRole;
     private String password;
-    private String username;
-    boolean isAdmin;
-    boolean isProjectLead;
-    int userId;
+    private String userName;
+    private int roleId;
+    private boolean isAdmin;
+    private boolean isProjectLead;
+    private int userId;
 
 
-    public User(String username, String password) {
-        this.username = username;
+    public User(String userLogin, String password) {
+        this.userLogin = userLogin;
         this.password = password;
     }
 
@@ -23,25 +24,39 @@ public class User {
     }
 
     public String getName() {return name;}
-    public String getSurName() {return surName;}
-    public String getUsername() {return username;}
+    public String getUserName() {return userName;}
     public String getEmail() {return email;}
-    public String getCountry() {return country;}
-    public String getLogin() {return login;}
+    public String getLocation() {return location;}
+    public String getLogin() {return projectRole;}
     public String getPassword() {return password;}
-    public boolean isAdmin() {return isAdmin;}
-    public boolean isProjectLead() {return isProjectLead;}
-    public int getUserId() {return userId;}
-    public void setName(String name) {this.name = name;}
-    public void setSurName(String surName) {this.surName = surName;}
-    public void setUsername(String username) {this.username = username;}
-    public void setEmail(String email) {this.email = email;}
-    public void setCountry(String country) {this.country = country;}
-    public void setLogin(String login) {this.login = login;}
-    public void setPassword(String password) {this.password = password;}
-    public void setAdmin(boolean isAdmin) {this.isAdmin = isAdmin;}
-    public void setProjectLead(boolean projectLead) {this.isProjectLead = projectLead;}
-    public void setUserId(int userId) {this.userId = userId;}
+    public boolean isAdmin() { return isAdmin; }
+    public void setAdmin(boolean isAdmin) { this.isAdmin = isAdmin; }
 
+    public boolean isProjectLead() { return isProjectLead; }
+    public void setProjectLead(boolean projectLead) { this.isProjectLead = projectLead; }
+
+
+    public int getUserId() {return userId;}
+
+    public void setName(String name) {this.name = name;}
+    public void setUserName(String userName) {this.userName = userName;}
+    public void setEmail(String email) {this.email = email;}
+    public void setLocation(String location) {this.location = location;}
+    public void setLogin(String login) {this.projectRole = login;}
+    public void setPassword(String password) {this.password = password;}
+
+    public void setUserId(int userId) {this.userId = userId;}
+    public String getProjectRole() {return projectRole;}
+    public void setProjectRole(String projectRole) {this.projectRole = projectRole;}
+    public int getRoleId() {return roleId;}
+    public void setRoleId(int roleId) {this.roleId = roleId;}
+
+    public String getAdminStatus() {
+        return isAdmin ? " admin " : " nej ";
+    }
+
+    public String getProjectLeadStatus() {
+        return isProjectLead ? " projektleder " : " nej ";
+    }
 }
 

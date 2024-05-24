@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>${projectName}</title>
+    <title th:text="${project.projectName}"></title>
 </head>
 <body>
 <form method="post" th:action="@{'/oversigt/'+ ${projectName} + '/rediger_projekt'}" >
