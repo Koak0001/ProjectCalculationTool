@@ -133,7 +133,9 @@ public class ProjectRepository {
                     }
                 }
                 insertUserProjectRole(con, projectLeadId, newProject.getProjectId(), 2);
+                if (projectLeadId != 1){
                 insertUserProjectRole(con, 1, newProject.getProjectId(), 1);
+                }
                 con.commit();
             } catch (SQLException e) {
                 con.rollback();
@@ -625,6 +627,22 @@ public class ProjectRepository {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error updating user");
+            e.printStackTrace();
+        }
+    }
+    public void deleteUser(int userId) {
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String junctionSql = "DELETE FROM User_Project_Role WHERE userId = ?";
+            PreparedStatement junctionPs = con.prepareStatement(junctionSql);
+            junctionPs.setInt(1, userId);
+            junctionPs.executeUpdate();
+
+            String userSql = "DELETE FROM User WHERE userId = ?";
+            PreparedStatement userPs = con.prepareStatement(userSql);
+            userPs.setInt(1, userId);
+            userPs.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error user from database");
             e.printStackTrace();
         }
     }

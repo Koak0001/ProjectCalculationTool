@@ -29,8 +29,6 @@
     <option value="false" th:selected="${user.isProjectLead} == false">Nej</option>
   </select>
 
-
-
   <label for="email">Email:</label>
   <input type="email" id="email" th:field="*{email}" required />
 
@@ -39,6 +37,14 @@
 
   <button type="submit" class="btn btn-primary">Opdater bruger</button>
   <a href="/oversigt/administrator" class="btn btn-secondary" role="button">Fortryd ændringer</a>
+</form>
+<br>
+<br>
+<br>
+<br>
+<br>
+<form th:action="@{'/oversigt/slet_bruger/' + ${user.userName} +'?userId=' + ${user.userId}}" method="post">
+  <button type="submit" class="btn btn-danger" onclick="return confirm('Advarsel! Dette er en permanent handling og brugeren slettes permanent fra databasen!')">Slet bruger</button>
 </form>
 
 </body>

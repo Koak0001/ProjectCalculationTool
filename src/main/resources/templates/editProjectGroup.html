@@ -14,16 +14,37 @@
 <br>
 
 <h4>Gruppens medlemmer</h4>
-<div th:each="user : ${users}" class="user-list">
-    <p th:text="'Navn: ' + ${user.userName}"></p>
-    <p th:text="'Email: ' + ${user.email}"></p>
-    <p th:text="'Land: ' + ${user.location}"></p>
-    <p th:text="'Projektrolle: ' + ${user.projectRole}"></p>
-    <br>
-    <a th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projektgruppe/' + ${user.userName} + '?projectId=' + ${project.projectId} + '&userId=' + ${user.userId}}" class="user-button">Rediger tilladelser</a>
-    <form th:action="@{'/oversigt/' + ${project.projectName} +'/fjern_bruger' +'?userId=' + ${user.userId} +'&projectId=' + ${project.projectId} + '&roleId='+ ${user.roleId}}" method="post">
-        <button type="submit" class="btn btn-danger" onclick="return confirm('Fjern bruger fra projektgruppen?')">Fjern fra projektgruppen</button>
-    </form>
-</div>
+<table>
+    <thead>
+    <tr>
+        <th>Projektrolle</th>
+        <th>Navn</th>
+        <th>Email</th>
+        <th>By</th>
+        <th>Rediger tilladelser</th>
+        <th>                   </th>
+        <th>Handlinger</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${users}">
+        <td th:text="${user.projectRole}"></td>
+        <td th:text="${user.userName}"></td>
+        <td th:text="${user.email}"></td>
+        <td th:text="${user.location}"></td>
+        <td>
+            <a th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projektgruppe/' + ${user.userName} + '?projectId=' + ${project.projectId} + '&userId=' + ${user.userId}}" class="user-button">Rediger tilladelser</a>
+        </td>
+        <td>
+            <p> </p>
+        </td>
+        <td>
+            <form th:action="@{'/oversigt/' + ${project.projectName} + '/fjern_bruger' + '?userId=' + ${user.userId} + '&projectId=' + ${project.projectId} + '&roleId=' + ${user.roleId}}" method="post">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Fjern bruger fra projektgruppen?')">Fjern fra projektgruppen</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>

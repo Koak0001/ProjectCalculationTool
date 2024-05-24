@@ -49,6 +49,7 @@ public class ProjectService {
     // Admin calls and functionality
     public List<User> getUsers() {return projectRepository.getUsers();}
     public void updateUser(User user) {projectRepository.updateUser(user);}
+    public void deleteUser(int userId) {projectRepository.deleteUser(userId);}
 
 
 }

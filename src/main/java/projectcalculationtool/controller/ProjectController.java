@@ -17,7 +17,10 @@ import projectcalculationtool.model.Task;
 import projectcalculationtool.service.ProjectService;
 
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Controller
 @RequestMapping("oversigt")
 public class ProjectController {
@@ -42,7 +45,7 @@ public class ProjectController {
             return "index";
         }
     }
-
+    //    TODO log out
     @GetMapping(value = "/forside")
     public String index(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -52,9 +55,6 @@ public class ProjectController {
             return "redirect:/";
         }
     }
-
-//    TODO log out
-
     //   View projects for user
     @GetMapping("projekter")
     public String getAllProjects(Model model) {
@@ -256,9 +256,26 @@ public class ProjectController {
     public String getCollaborators(@RequestParam int projectId, Model model) {
         List<User> users = projectService.getAssociatedUsers(projectId);
         Project project = projectService.getProject(projectId);
+
+        List<User> sortedUsers = users.stream()
+                .sorted(Comparator.comparingInt(this::getRolePriority))
+                .collect(Collectors.toList());
         model.addAttribute("project", project);
-        model.addAttribute("users", users);
+        model.addAttribute("users", sortedUsers);
         return "editProjectGroup";
+    }
+
+    private int getRolePriority(User user) {
+        switch (user.getProjectRole()) {
+            case "Projektleder":
+                return 1;
+            case "Udvikler":
+                return 2;
+            case "Observatør":
+                return 3;
+            default:
+                return 4;
+        }
     }
 
     @GetMapping("{ProjectName}/rediger_projektgruppe/{userName}")
@@ -305,6 +322,17 @@ public class ProjectController {
         projectService.updateUser(user);
         return "redirect:/oversigt/administrator";
     }
+
+    @PostMapping("/slet_bruger/{userName}")
+    public String deleteUser(@RequestParam int userId) {
+        if (projectService.getLoggedInUser().getIsAdmin()) {
+            projectService.deleteUser(userId);
+            return "redirect:/oversigt/administrator";
+        } else {
+            return "no_permission";
+        }
+    }
+
 }
 
 
