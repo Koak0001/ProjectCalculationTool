@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Projekter</title>
+</head>
+<body>
+
+<div th:each="project : ${projects}" class="item-list">
+    <h4 th:text="${project.projectName}"></h4>
+    <p th:text="${project.projectId}"></p>
+    <form method="post" th:action="@{'/oversigt/administrator/overtag_projekt'}">
+        <input type="hidden" name="projectId" th:value="${project.projectId}" />
+        <input type="hidden" name="userId" th:value="${userId}" />
+        <button type="submit" class="project-button">Indsæt som projektleder</button>
+    </form>
+</div>
+
+
+</body>
+</html>

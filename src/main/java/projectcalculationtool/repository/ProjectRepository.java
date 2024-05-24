@@ -677,6 +677,36 @@ public class ProjectRepository {
             e.printStackTrace();
         }
     }
+    public List<Project> adminGetProjects(int adminUserId) {
+        List<Project> projects = new ArrayList<>();
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String sql = "SELECT ProjectId, ProjectName FROM Project " +
+                    "WHERE ProjectId NOT IN (SELECT ProjectId FROM User_Project_Role WHERE UserId = ?)";
+            PreparedStatement psts = con.prepareStatement(sql);
+            psts.setInt(1, adminUserId);
+            ResultSet resultSet = psts.executeQuery();
+            while (resultSet.next()) {
+                int projectId = resultSet.getInt("ProjectId");
+                String projectName = resultSet.getString("ProjectName");
+                Project project = new Project(projectName);
+                project.setProjectId(projectId);
+                projects.add(project);
+            }
+        } catch (SQLException e) {
+            System.out.println("Retrieving projects for admin failed");
+            e.printStackTrace();
+        }
+        return projects;
+    }
 
 
+    public void adminInsertIntoProject(int projectId, int userId){
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            insertUserProjectRole(con, userId, projectId, 2);
+
+        } catch (SQLException e) {
+            System.out.println("Failed to insert admin");
+            throw new RuntimeException(e);
+        }
+    }
 }

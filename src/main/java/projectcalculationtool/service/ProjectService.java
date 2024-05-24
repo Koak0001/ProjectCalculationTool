@@ -48,6 +48,8 @@ public class ProjectService {
 
     // Admin calls and functionality
     public List<User> getUsers() {return projectRepository.getUsers();}
+    public List<Project> adminGetProjects(int adminUserId) {return projectRepository.adminGetProjects(adminUserId);}
+    public void adminInsertIntoProject(int projectId, int userId){projectRepository.adminInsertIntoProject(projectId, userId); ;}
     public void createUser(User user) {projectRepository.createUser(user);}
     public void updateUser(User user) {projectRepository.updateUser(user);}
     public void deleteUser(int userId) {projectRepository.deleteUser(userId);}

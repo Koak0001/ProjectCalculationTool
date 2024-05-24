@@ -347,6 +347,23 @@ public class ProjectController {
         projectService.createUser(user);
         return "redirect:/oversigt/administrator";
     }
+    @GetMapping("/administrator/projekter")
+    public String showProjects(Model model) {
+        if (projectService.getLoggedInUser().isAdmin()) {
+            int adminId = projectService.getLoggedInUser().getUserId();
+            List<Project> projects =projectService.adminGetProjects(adminId);
+            model.addAttribute("projects", projects);
+            model.addAttribute("userId", adminId);
+            return "adminProjects";
+        } else {
+            return "no_permission";
+        }
+    }
+    @PostMapping("/administrator/overtag_projekt")
+    public String insertAdminInProject(@RequestParam int projectId, @RequestParam int userId) {
+        projectService.adminInsertIntoProject(projectId, userId);
+        return "redirect:/oversigt/administrator";
+    }
 
 }
 
