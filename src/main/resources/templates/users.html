@@ -1,11 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Alle Brugere</title>
     <h2 class="section-title">Bruger information for alle brugere:</h2>
 </head>
 <body>
+<br>
+<a th:href="@{/oversigt/administrator/opret_bruger}">Opret ny bruger</a>
+<br>
+
 <table>
     <thead>
     <tr>

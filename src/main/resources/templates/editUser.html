@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -15,18 +15,18 @@
   <input type="text" id="userName" th:field="*{userName}" required />
 
   <label for="userPassword">Kodeord:</label>
-  <input type="password" id="userPassword" th:field="*{password}" required />
+  <input type="password" id="userPassword" th:field="*{password}"/>
 
-  <label for="isAdmin">Admin:</label>
-  <select id="isAdmin" th:field="*{isAdmin}">
-    <option value="true" th:selected="${user.isAdmin} == true">Ja</option>
-    <option value="false" th:selected="${user.isAdmin} == false">Nej</option>
+  <label for="admin">Admin:</label>
+  <select id="admin" th:field="*{admin}">
+    <option value="true" th:selected="${user.admin} == true">Ja</option>
+    <option value="false" th:selected="${user.admin} == false">Nej</option>
   </select>
 
-  <label for="isProjectLead">Projektleder:</label>
-  <select id="isProjectLead" th:field="*{isProjectLead}">
-    <option value="true" th:selected="${user.isProjectLead} == true">Ja</option>
-    <option value="false" th:selected="${user.isProjectLead} == false">Nej</option>
+  <label for="projectLead">Projektleder:</label>
+  <select id="projectLead" th:field="*{projectLead}">
+    <option value="true" th:selected="${user.projectLead} == true">Ja</option>
+    <option value="false" th:selected="${user.projectLead} == false">Nej</option>
   </select>
 
   <label for="email">Email:</label>
@@ -38,14 +38,15 @@
   <button type="submit" class="btn btn-primary">Opdater bruger</button>
   <a href="/oversigt/administrator" class="btn btn-secondary" role="button">Fortryd ændringer</a>
 </form>
+
 <br>
-<br>
-<br>
-<br>
-<br>
+
 <form th:action="@{'/oversigt/slet_bruger/' + ${user.userName} +'?userId=' + ${user.userId}}" method="post">
   <button type="submit" class="btn btn-danger" onclick="return confirm('Advarsel! Dette er en permanent handling og brugeren slettes permanent fra databasen!')">Slet bruger</button>
 </form>
-
+<br>
+<br>
+<br>
+<br>
 </body>
 </html>

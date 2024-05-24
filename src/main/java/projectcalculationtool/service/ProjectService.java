@@ -27,7 +27,7 @@ public class ProjectService {
     //  SubProject calls
     public void addSubProject(SubProject subProject, int parent) {projectRepository.addNewSubProject(subProject, parent);}
     public void updateSubProject(SubProject subProject) {projectRepository.updateSubProject(subProject);}
-    public SubProject getSubProject(int subProjectId){return (SubProject) projectRepository.getSubProject(subProjectId);}
+    public SubProject getSubProject(int subProjectId){return projectRepository.getSubProject(subProjectId);}
     public List<SubProject> getSubProjects(int projectId, String role) {return projectRepository.getSubProjects(projectId, role);}
 
     // Task calls
@@ -48,6 +48,7 @@ public class ProjectService {
 
     // Admin calls and functionality
     public List<User> getUsers() {return projectRepository.getUsers();}
+    public void createUser(User user) {projectRepository.createUser(user);}
     public void updateUser(User user) {projectRepository.updateUser(user);}
     public void deleteUser(int userId) {projectRepository.deleteUser(userId);}
 

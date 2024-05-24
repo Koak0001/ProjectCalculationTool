@@ -366,7 +366,7 @@ public class ProjectRepository {
     public User checkUser(String userLogin, String password) {
         User userLoggedIn = null;
         try (Connection connection = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String sql = "SELECT * FROM User WHERE userLogin=? AND UserPassword=?";
+            String sql = "SELECT * FROM User WHERE UserLogin=? AND UserPassword=?";
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, userLogin);
             ps.setString(2, password);
@@ -614,22 +614,36 @@ public class ProjectRepository {
     }
     public void updateUser(User updatedUser) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String updateUserSql = "UPDATE User SET UserLogin = ?, UserName = ?, UserPassword = ?, isAdmin = ?, isProjectLead = ?, Email = ?, Location = ? WHERE UserId = ?";
-            PreparedStatement pstmt = con.prepareStatement(updateUserSql);
-            pstmt.setString(1, updatedUser.getLogin());
-            pstmt.setString(2, updatedUser.getUserName());
-            pstmt.setString(3, updatedUser.getPassword());
-            pstmt.setBoolean(4, updatedUser.getIsAdmin());
-            pstmt.setBoolean(5, updatedUser.getIsProjectLead());
-            pstmt.setString(6, updatedUser.getEmail());
-            pstmt.setString(7, updatedUser.getLocation());
-            pstmt.setInt(8, updatedUser.getUserId());
-            pstmt.executeUpdate();
+            String getCurrentPasswordSql = "SELECT UserPassword FROM User WHERE UserId = ?";
+            PreparedStatement getCurrentPasswordStmt = con.prepareStatement(getCurrentPasswordSql);
+            getCurrentPasswordStmt.setInt(1, updatedUser.getUserId());
+            ResultSet rs = getCurrentPasswordStmt.executeQuery();
+
+            if (rs.next()) {
+                String currentPassword = rs.getString("UserPassword");
+
+                String updateUserSql = "UPDATE User SET UserLogin = ?, UserName = ?, UserPassword = ?, isAdmin = ?, isProjectLead = ?, Email = ?, Location = ? WHERE UserId = ?";
+                PreparedStatement pstmt = con.prepareStatement(updateUserSql);
+                pstmt.setString(1, updatedUser.getLogin());
+                pstmt.setString(2, updatedUser.getUserName());
+                if (updatedUser.getPassword() == null || updatedUser.getPassword().isEmpty()) {
+                    pstmt.setString(3, currentPassword);
+                } else {
+                    pstmt.setString(3, updatedUser.getPassword());
+                }
+                pstmt.setBoolean(4, updatedUser.isAdmin());
+                pstmt.setBoolean(5, updatedUser.isProjectLead());
+                pstmt.setString(6, updatedUser.getEmail());
+                pstmt.setString(7, updatedUser.getLocation());
+                pstmt.setInt(8, updatedUser.getUserId());
+                pstmt.executeUpdate();
+            }
         } catch (SQLException e) {
             System.out.println("Error updating user");
             e.printStackTrace();
         }
     }
+
     public void deleteUser(int userId) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
             String junctionSql = "DELETE FROM User_Project_Role WHERE userId = ?";
@@ -646,5 +660,23 @@ public class ProjectRepository {
             e.printStackTrace();
         }
     }
+    public void createUser(User newUser) {
+        String insertUserSql = "INSERT INTO User (UserLogin, UserName, UserPassword, isAdmin, isProjectLead, Email, Location) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+             PreparedStatement pstmt = con.prepareStatement(insertUserSql)) {
+            pstmt.setString(1, newUser.getLogin());
+            pstmt.setString(2, newUser.getUserName());
+            pstmt.setString(3, newUser.getPassword());
+            pstmt.setBoolean(4, newUser.isAdmin());
+            pstmt.setBoolean(5, newUser.isProjectLead());
+            pstmt.setString(6, newUser.getEmail());
+            pstmt.setString(7, newUser.getLocation());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error creating user");
+            e.printStackTrace();
+        }
+    }
+
 
 }

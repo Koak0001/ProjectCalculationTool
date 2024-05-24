@@ -135,7 +135,7 @@ public class ProjectController {
     @GetMapping("/nytprojekt")
     public String showProjectForm(Model model) {
         model.addAttribute("project", new Project(""));
-        if (projectService.getLoggedInUser().getIsProjectLead()) {
+        if (projectService.getLoggedInUser().isProjectLead()) {
             return "new_project";
         } else return "no_permission";
     }
@@ -221,7 +221,7 @@ public class ProjectController {
     public String getAllUsers(Model model) {
         List<User> users = projectService.getUsers();
         model.addAttribute("users", users);
-        if (projectService.getLoggedInUser().getIsAdmin()) {
+        if (projectService.getLoggedInUser().isAdmin()) {
             return "users";
         } else return "no_permission";
     }
@@ -310,7 +310,7 @@ public class ProjectController {
     public String showUpdateUserForm(@PathVariable int userId, Model model) {
         User user = projectService.getUser(userId);
         model.addAttribute("user", user);
-        if (projectService.getLoggedInUser().getIsAdmin()) {
+        if (projectService.getLoggedInUser().isAdmin()) {
             return "editUser";
         } else {
             return "no_permission";
@@ -325,12 +325,27 @@ public class ProjectController {
 
     @PostMapping("/slet_bruger/{userName}")
     public String deleteUser(@RequestParam int userId) {
-        if (projectService.getLoggedInUser().getIsAdmin()) {
+        if (projectService.getLoggedInUser().isAdmin()) {
             projectService.deleteUser(userId);
             return "redirect:/oversigt/administrator";
         } else {
             return "no_permission";
         }
+    }
+    @GetMapping("/administrator/opret_bruger")
+    public String showCreateUserForm(Model model) {
+        if (projectService.getLoggedInUser().isAdmin()) {
+        model.addAttribute("user", new User());
+        return "createUser";
+        } else {
+        return "no_permission";
+        }
+    }
+
+    @PostMapping("/administrator/opret_bruger")
+    public String createUser(@ModelAttribute User user) {
+        projectService.createUser(user);
+        return "redirect:/oversigt/administrator";
     }
 
 }

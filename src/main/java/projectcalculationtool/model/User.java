@@ -29,10 +29,12 @@ public class User {
     public String getLocation() {return location;}
     public String getLogin() {return projectRole;}
     public String getPassword() {return password;}
-    public boolean getIsAdmin() {return isAdmin;}
-    public void setAdmin(boolean isAdmin) {this.isAdmin = isAdmin;}
-    public boolean getIsProjectLead() {return isProjectLead;}
-    public void setProjectLead(boolean projectLead) {this.isProjectLead = projectLead;}
+    public boolean isAdmin() { return isAdmin; }
+    public void setAdmin(boolean isAdmin) { this.isAdmin = isAdmin; }
+
+    public boolean isProjectLead() { return isProjectLead; }
+    public void setProjectLead(boolean projectLead) { this.isProjectLead = projectLead; }
+
 
     public int getUserId() {return userId;}
 
