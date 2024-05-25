@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Rediger gruppemedlem</title>
+</head>
+<body>
+<p th:text="'Username: ' + ${user.userName}"></p>
+<p th:text="'Email: ' + ${user.email}"></p>
+<p th:text="'Country: ' + ${user.location}"></p>
+<br>
+<br>
+<form method="post" th:action="@{'/oversigt/' + ${project.projectName} + '/rediger_projektgruppe/' + ${user.userName}}">
+    <input type="hidden" name="projectId" th:value="${project.projectId}" />
+    <input type="hidden" name="userId" th:value="${user.userId}" />
+    <select name="roleValue" required>
+        <option value="" disabled selected>Vælg en rolle</option>
+        <option value="1">Observatør</option>
+        <option value="2">Sekundær projektleder</option>
+        <option value="3">Udvikler</option>
+    </select>
+    <button type="submit">Opdater rolle</button>
+    <a href="/oversigt/projekter" class="btn btn-secondary">Fortryd ændringer</a>
+</form>
+</body>
+</html>
