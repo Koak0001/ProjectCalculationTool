@@ -19,7 +19,7 @@ jobs:
       - name: Set up Java version
         uses: actions/setup-java@v1
         with:
-          java-version: 'java21'
+          java-version: '21'  # Ensure correct version format
 
       - name: Build with Maven
         run: mvn clean install
@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
+          path: target/*.jar  # Adjusted path format
 
   deploy:
     runs-on: ubuntu-latest
@@ -37,20 +37,20 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
-  
+      id-token: write  # This is required for requesting the JWT
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
         with:
           name: java-app
-      
+
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_21C41F522E8B4F03A2A5B970B5E6F0DF }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_73B348B9F06A4C9FBD8E89AFF779BFA7 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E3EC86FBE4F047F298E1C8A4909E4A98 }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Set up application properties
         run: |
@@ -63,6 +63,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'AlphaSolutions-AK'
-          slot-name: 'Production'
-          package: '*.jar'
+          slot-name: 'production'  # Ensure the slot name is correct
+          package: '*.jar'  # Ensure the package path matches the artifact
+
           
