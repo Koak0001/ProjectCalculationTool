@@ -3,25 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Nyt projekt</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
-<body>
-<h4>Tilføj en opgave til  <span th:text="${subProjectName}"></span></h4>
+<body class="no-scroll">
+<div th:replace="~{fragments/header :: header}"></div>
 
-<form method="post" th:action="@{/oversigt/nytprojekt}" th:object="${project}">
-    <div class="form-project">
-        <label for="projectName">Projektets titel:</label>
-        <input type="text" th:field="*{projectName}" id="projectName" required>
-        <br>
-        <label for="deadline">Deadline:</label>
-        <input type="date" th:field="*{deadline}" id="deadline" required>
-    </div>
-    <div class="form-description">
-        <label for="description">Projektbeskrivelse:</label>
-        <textarea th:field="*{description}" id="description"></textarea>
-    </div>
-    <button type="submit">Opret projekt</button>
-    <a href="/oversigt/projekter" class="btn btn-secondary">Fortryd oprettelse</a>
-</form>
+<div class="container-project">
+    <div class="form-wrapper">
+        <h2 class="section-title-project">Opret nyt projekt: <span th:text="${subProjectName}"></span></h2>
 
+        <form method="post" th:action="@{/oversigt/nytprojekt}" th:object="${project}">
+            <div class="form-project">
+                <label for="projectName">Projektets titel:</label>
+                <input type="text" th:field="*{projectName}" id="projectName" class="form-control" required>
+            </div>
+            <div class="form-project">
+                <label for="deadline">Deadline:</label>
+                <input type="date" th:field="*{deadline}" id="deadline" class="form-control" required>
+            </div>
+            <div class="form-description">
+                <label for="description">Projektbeskrivelse:</label>
+                <textarea th:field="*{description}" id="description" class="form-control"></textarea>
+            </div>
+            <div class="button-container">
+                <button type="submit" class="new-btn-project">Opret projekt</button>
+                <a href="/oversigt/projekter" class="project-button-project">Fortryd oprettelse</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

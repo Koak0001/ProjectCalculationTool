@@ -45,7 +45,7 @@ public class ProjectController {
             return "index";
         }
     }
-    //    TODO log out
+
     @GetMapping(value = "/forside")
     public String index(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -55,6 +55,21 @@ public class ProjectController {
             return "redirect:/";
         }
     }
+
+//
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+            System.out.println("Session invalidated");
+        } else {
+            System.out.println("No session found");
+        }
+        return "redirect:/";
+    }
+
     //   View projects for user
     @GetMapping("projekter")
     public String getAllProjects(Model model) {

@@ -3,18 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Nyt Delprojekt</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
-<body>
-<h2>Tilføj et delprojekt til  <span th:text="${projectName}"></span></h2>
+<body class="no-scroll">
+<div th:replace="~{fragments/header :: header}"></div>
 
-<form method="post" th:action="@{'/oversigt/' + ${projectName} + '/opret_delprojekt'+'?parentProjectId=' +${projectId}}" th:object="${subproject}" >
-    <div class="form-delprojekt">
-        <label for="subProjectName">Delprojekt titel:</label>
-        <input type="text" th:field="*{projectName}" id="subProjectName">
-        <br>
+<div class="container-project">
+    <div class="form-wrapper">
+        <h2 class="section-title-project">Tilføj et delprojekt til <span th:text="${projectName}"></span></h2>
+
+        <form method="post" th:action="@{'/oversigt/' + ${projectName} + '/opret_delprojekt'+'?parentProjectId=' +${projectId}}" th:object="${subproject}" class="form-project">
+            <div class="form-delprojekt">
+                <label for="subProjectName">Delprojekt titel:</label>
+                <input type="text" th:field="*{projectName}" id="subProjectName" class="form-control" required>
+            </div>
+            <br>
+            <div class="button-container">
+                <button type="submit" class="new-btn-project">Tilføj delprojekt!</button>
+                <a href="/oversigt/projekter" class="project-button-project">Fortryd tilføjelse</a>
+            </div>
+        </form>
     </div>
-    <button type="submit">Tilføj delprojekt!</button>
-    <a href="/oversigt/projekter" class="btn btn-secondary">Fortryd tilføjelse</a>
-</form>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

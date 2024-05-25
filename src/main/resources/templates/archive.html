@@ -1,26 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<nav>
-    <ul>
-        <a th:href="@{/oversigt/projekter}" class="new-btn">Forlad arkiv</a>
-    </ul>
-</nav>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Dit arkiv</title>
-    <h2 class="section-title">Dine arkiverede projekter:</h2>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
 <body>
-<p th:if="${#lists.isEmpty(projects)}" th:text="'Arkivet er tomt'"></p>
-
-<div th:each="project : ${projects}" class="item-list">
-    <h2 th:text="${project.projectName}"></h2>
-    <h4 th:text="${project.userRole}"></h4>
-    <p th:text="${project.description}"></p>
-    <p th:text="${project.deadline}"></p>
-    <p th:text="${project.hours}"></p>
-    <a th:href="@{'/oversigt/' + ${project.projectName} + '?projectId=' + ${project.projectId} + '&userRole=' + ${project.userRole}}" class="project-button">Se projekt</a>
-    <br>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container">
+    <a th:href="@{/oversigt/projekter}" class="new-btn">Forlad arkiv</a>
+    <h2 class="section-title">Dine arkiverede projekter:</h2>
+    <p th:if="${#lists.isEmpty(projects)}" th:text="'Arkivet er tomt'"></p>
+    <div class="project-container">
+    <div th:each="project : ${projects}" class="item-list">
+        <h2 th:text="${project.projectName}"></h2>
+        <h4 th:text="${project.userRole}"></h4>
+        <p th:text="${project.description}"></p>
+        <p th:text="${project.deadline}"></p>
+        <p th:text="${project.hours}"></p>
+        <a th:href="@{'/oversigt/' + ${project.projectName} + '?projectId=' + ${project.projectId} + '&userRole=' + ${project.userRole}}" class="project-button">Se projekt</a>
+        <br>
+    </div>
+</div>
 </div>
 </body>
 </html>
