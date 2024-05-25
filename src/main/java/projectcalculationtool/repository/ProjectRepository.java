@@ -23,7 +23,7 @@ public class ProjectRepository {
 
     private User loggedInUser = new User();
 
-    //  TODO  - logout
+
     public void login(String userLogin, String password) {
         User user = checkUser(userLogin, password);
         if (user != null) {
@@ -37,31 +37,24 @@ public class ProjectRepository {
 
     public List<Project> getProjects(int userId, boolean archived) {
         List<Project> projects = new ArrayList<>();
-        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String sql = "SELECT P.*, R.RoleTitle, SUM(Temp.Total) AS TotalHours " +
-                    "FROM User_Project_Role UPR " +
-                    "JOIN Project P ON UPR.ProjectId = P.ProjectId " +
-                    "JOIN UserRole R ON UPR.RoleId = R.RoleId " +
-                    "LEFT JOIN (SELECT PS.ProjectId, ST.SubProjectId, SUM(T.Hours) AS Total " +
-                    "           FROM Subproject_Task ST " +
-                    "           JOIN Task T ON ST.TaskId = T.TaskId " +
-                    "           JOIN Project_Subproject PS ON ST.SubProjectId = PS.SubProjectId " +
-                    "           GROUP BY PS.ProjectId, ST.SubProjectId) AS Temp ON P.ProjectId = Temp.ProjectId " +
-                    "WHERE UPR.UserId = ? " +
-                    "GROUP BY P.ProjectId";
-            PreparedStatement psts = con.prepareStatement(sql);
-            psts.setInt(1, userId);
-            ResultSet resultSet = psts.executeQuery();
+        String sql = "SELECT P.*, R.RoleTitle " +
+                "FROM User_Project_Role UPR " +
+                "JOIN Project P ON UPR.ProjectId = P.ProjectId " +
+                "JOIN UserRole R ON UPR.RoleId = R.RoleId " +
+                "WHERE UPR.UserId = ?";
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet resultSet = ps.executeQuery();
             while (resultSet.next()) {
                 String description = resultSet.getString("Description");
                 Date deadline = resultSet.getDate("Deadline");
                 int projectId = resultSet.getInt("projectId");
                 String projectName = resultSet.getString("projectName");
                 String roleTitle = resultSet.getString("RoleTitle");
-                int totalHours = resultSet.getInt("TotalHours");
+                int totalHours = getTotalHoursForProject(projectId);
 
                 Project project = new Project(projectName);
-
                 project.setDescription(description);
                 project.setDeadline(deadline);
                 project.setProjectId(projectId);
@@ -82,27 +75,45 @@ public class ProjectRepository {
         return projects;
     }
 
+    private int getTotalHoursForProject(int projectId) {
+        int totalHours = 0;
+        String sql = "SELECT SUM(T.Hours) AS TotalHours " +
+                "FROM Subproject_Task ST " +
+                "JOIN Task T ON ST.TaskId = T.TaskId " +
+                "JOIN Project_Subproject PS ON ST.SubProjectId = PS.SubProjectId " +
+                "WHERE PS.ProjectId = ?";
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, projectId);
+            ResultSet resultSet = ps.executeQuery();
+            if (resultSet.next()) {
+                totalHours = resultSet.getInt("TotalHours");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching total hours for project");
+            e.printStackTrace();
+        }
+        return totalHours;
+    }
+
+
+
     public List<SubProject> getSubProjects(int projectId, String userRole) {
         List<SubProject> subprojects = new ArrayList<>();
-        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String sql = "SELECT P.SubprojectId, P.SubprojectName, Temp.Total AS Hours " +
-                    "FROM Project_Subproject PS " +
-                    "JOIN Subproject P ON PS.SubprojectId = P.SubprojectId " +
-                    "LEFT JOIN (SELECT ST.SubProjectId, SUM(T.Hours) AS Total " +
-                    "           FROM Subproject_Task ST " +
-                    "           JOIN Task T ON ST.TaskId = T.TaskId " +
-                    "           GROUP BY ST.SubProjectId) AS Temp ON PS.SubprojectId = Temp.SubProjectId " +
-                    "WHERE PS.ProjectId = ?";
-            PreparedStatement psts = con.prepareStatement(sql);
-            psts.setInt(1, projectId);
-            ResultSet resultSet = psts.executeQuery();
+        String sql = "SELECT P.* " +
+                "FROM Project_Subproject PS " +
+                "JOIN Subproject P ON PS.SubprojectId = P.SubprojectId " +
+                "WHERE PS.ProjectId = ?";
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, projectId);
+            ResultSet resultSet = ps.executeQuery();
             while (resultSet.next()) {
                 int subprojectId = resultSet.getInt("SubprojectId");
                 String subprojectName = resultSet.getString("SubprojectName");
-                int hours = resultSet.getInt("Hours");
+                int hours = getTotalHoursForSubproject(subprojectId);
 
                 SubProject subproject = new SubProject(subprojectName);
-
                 subproject.setProjectId(subprojectId);
                 subproject.setHours(hours);
                 subproject.setUserRole(userRole);
@@ -113,6 +124,26 @@ public class ProjectRepository {
             e.printStackTrace();
         }
         return subprojects;
+    }
+
+    private int getTotalHoursForSubproject(int subprojectId) {
+        int totalHours = 0;
+        String sql = "SELECT SUM(T.Hours) AS TotalHours " +
+                "FROM Subproject_Task ST " +
+                "JOIN Task T ON ST.TaskId = T.TaskId " +
+                "WHERE ST.SubProjectId = ?";
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, subprojectId);
+            ResultSet resultSet = ps.executeQuery();
+            if (resultSet.next()) {
+                totalHours = resultSet.getInt("TotalHours");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching total hours for subproject");
+            e.printStackTrace();
+        }
+        return totalHours;
     }
 
     public void addNewProject(Project newProject, int projectLeadId) {
