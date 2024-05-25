@@ -3,20 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>Ny opgave</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
-<body>
-<h2>Tilføj en opgave til  <span th:text="${subProjectName}"></span></h2>
+<body class="no-scroll">
+<div th:replace="~{fragments/header :: header}"></div>
 
-<form method="post" th:action="@{'/oversigt/' + ${subProjectName} + '/opret_opgave'+'?parentProjectId=' +${projectId}}" th:object="${task}" >
-    <div class="form-task">
-        <label for="taskName">Opgavens titel:</label>
-        <input type="text" th:field="*{taskName}" id="taskName">
-        <br>
-        <label for="hours">Forventet arbejdstid:</label>
-        <input type="number" th:field="*{hours}" id="hours">
+<div class="container-project">
+    <div class="form-wrapper">
+        <h2 class="section-title-project">Tilføj en opgave til <span th:text="${subProjectName}"></span></h2>
+
+        <form method="post" th:action="@{'/oversigt/' + ${subProjectName} + '/opret_opgave'+'?parentProjectId=' +${projectId}}" th:object="${task}" class="form-project">
+            <div class="form-task">
+                <label for="taskName">Opgavens titel:</label>
+                <input type="text" th:field="*{taskName}" id="taskName" class="form-control" required>
+            </div>
+            <div class="form-task">
+                <label for="hours">Forventet arbejdstid:</label>
+                <input type="number" th:field="*{hours}" id="hours" class="form-control" required>
+            </div>
+            <br>
+            <div class="button-container">
+                <button type="submit" class="new-btn-project">Tilføj opgave</button>
+                <a href="/oversigt/projekter" class="project-button-project">Fortryd tilføjelse</a>
+            </div>
+        </form>
     </div>
-    <button type="submit">Tilføj opgave</button>
-    <a href="/oversigt/projekter" class="btn btn-secondary">Fortryd tilføjelse</a>
-</form>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

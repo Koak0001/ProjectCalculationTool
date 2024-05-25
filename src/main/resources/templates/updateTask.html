@@ -2,17 +2,34 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>${taskName}</title>
+    <title>Rediger opgave</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
-<body>
-<form method="post" th:action="@{'/oversigt/'+ ${taskName} + '/rediger_opgave'}" >
-    <input type="hidden" th:name="taskId" th:value="${task.taskId}" />
-    <label for="taskName">Opgavens titel: </label>
-    <input type="text" id="taskName" name="taskName" th:value="${task.taskName}" />
-    <label for="hours">Forventet arbejdstid: </label>
-    <input type="number" id="hours" name="hours" th:value="${task.hours}" />
-    <button type="submit">Afslut redigering</button>
-    <a href="/oversigt/projekter" class="btn btn-secondary">Fortryd ændringer</a>
-</form>
+<body class="no-scroll">
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container-project">
+    <div class="form-wrapper">
+        <h2 class="section-title-project">Rediger opgave: </h2>
+        <form method="post" th:action="@{'/oversigt/'+ ${taskName} + '/rediger_opgave'}" class="form-project">
+            <input type="hidden" th:name="taskId" th:value="${task.taskId}" />
+            <div class="form-task">
+                <label for="taskName">Opgavens titel: </label>
+                <input type="text" id="taskName" name="taskName" th:value="${task.taskName}" class="form-control" required/>
+            </div>
+            <div class="form-task">
+                <label for="hours">Forventet arbejdstid: </label>
+                <input type="number" id="hours" name="hours" th:value="${task.hours}" class="form-control" required/>
+            </div>
+            <br>
+            <div class="button-container">
+                <button type="submit" class="new-btn-project">Afslut redigering</button>
+                <a href="/oversigt/projekter" class="project-button-project">Fortryd ændringer</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

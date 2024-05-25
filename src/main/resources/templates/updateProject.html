@@ -3,21 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${project.projectName}"></title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
-<body>
-<form method="post" th:action="@{'/oversigt/'+ ${projectName} + '/rediger_projekt'}" >
-    <input type="hidden" th:name="projectId" th:value="${project.projectId}" />
-    <label for="projectName">Projektets titel: </label>
-    <input type="text" id="projectName" name="projectName" th:value="${project.projectName}" />
-    <label for="deadline">Deadline:</label>
-    <input type="date" th:field="${project.deadline}" id="deadline" required/>
-    <br>
-    <div class="form-description">
-        <label for="description">Projektbeskrivelse:</label>
-        <textarea th:field="${project.description}" id="description"></textarea>
+<body class="no-scroll">
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container-project">
+    <div class="form-wrapper">
+        <h2 class="section-title-project">Rediger projekt: </h2>
+
+        <form method="post" th:action="@{'/oversigt/'+ ${projectName} + '/rediger_projekt'}" class="form-project">
+            <input type="hidden" th:name="projectId" th:value="${project.projectId}" />
+            <div class="form-project">
+                <label for="projectName">Projektets titel: </label>
+                <input type="text" id="projectName" name="projectName" th:value="${project.projectName}" class="form-control" required/>
+            </div>
+            <div class="form-project">
+                <label for="deadline">Deadline:</label>
+                <input type="date" th:field="${project.deadline}" id="deadline" class="form-control" required/>
+            </div>
+            <div class="form-description">
+                <label for="description">Projektbeskrivelse:</label>
+                <textarea th:field="${project.description}" id="description" class="form-control"></textarea>
+            </div>
+            <div class="button-container">
+                <button type="submit" class="new-btn-project">Afslut redigering</button>
+                <a href="/oversigt/projekter" class="project-button-project">Fortryd ændringer</a>
+            </div>
+        </form>
     </div>
-    <button type="submit">Afslut redigering</button>
-    <a href="/oversigt/projekter" class="btn btn-secondary">Fortryd ændringer</a>
-</form>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
