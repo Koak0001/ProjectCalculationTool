@@ -16,18 +16,18 @@ class ProjectCalculationToolApplicationTests {
 
     @Test
     void contextLoads() {
-        // Verifies that the application context loads successfully
+        assertThat(projectService).isNotNull();
     }
 
     @Test
     void testGetProject() {
-        // Given
+        // arrange
         int projectId = 1;
 
-        // When
+        // act
         Project project = projectService.getProject(projectId);
 
-        // Then
+        // assert
         assertThat(project).isNotNull();
         assertThat(project.getProjectId()).isEqualTo(projectId);
     }
