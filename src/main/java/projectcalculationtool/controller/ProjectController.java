@@ -380,6 +380,18 @@ public class ProjectController {
         return "redirect:/oversigt/administrator";
     }
 
+    @PostMapping("/slet_delprojekt/{subProjectName}")
+    public String deleteSubProject(@RequestParam int subProjectId) {
+        projectService.deleteProject(subProjectId);
+        return "redirect:/oversigt/projekter";
+    }
+
+    @PostMapping("/slet_opgave/{taskName}")
+    public String deleteTask(@RequestParam int taskId) {
+        projectService.deleteTask(taskId);
+        return "redirect:/oversigt/projekter";
+    }
+
 }
 
 

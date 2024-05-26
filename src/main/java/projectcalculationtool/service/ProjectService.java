@@ -27,12 +27,14 @@ public class ProjectService {
     //  SubProject calls
     public void addSubProject(SubProject subProject, int parent) {projectRepository.addNewSubProject(subProject, parent);}
     public void updateSubProject(SubProject subProject) {projectRepository.updateSubProject(subProject);}
+    public void deleteSubProject(int subProjectId) {projectRepository.deleteTasksForSubproject(subProjectId);}
     public SubProject getSubProject(int subProjectId){return projectRepository.getSubProject(subProjectId);}
     public List<SubProject> getSubProjects(int projectId, String role) {return projectRepository.getSubProjects(projectId, role);}
 
     // Task calls
     public void addTask(Task task, int parent) {projectRepository.addNewTask(task, parent);}
     public void updateTask (Task task) {projectRepository.updateTask(task);}
+    public void deleteTask(int taskId) {projectRepository.deleteTask(taskId);}
     public Task getTask (int taskId) {return projectRepository.getTask(taskId);}
     public List<Task> getTasks(int projectId, String role) {return projectRepository.getTasks(projectId, role);}
 

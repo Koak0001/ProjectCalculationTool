@@ -279,7 +279,7 @@ public class ProjectRepository {
             selectTasksPs.setInt(1, subprojectId);
             ResultSet rs = selectTasksPs.executeQuery();
 
-            // Delete each task associated with the Subproject
+            // Delete tasks associated with Subproject
             while (rs.next()) {
                 int taskId = rs.getInt("TaskId");
                 deleteTask(taskId);
@@ -308,7 +308,7 @@ public class ProjectRepository {
             selectSubprojectsPs.setInt(1, projectId);
             ResultSet rs = selectSubprojectsPs.executeQuery();
 
-            // Delete each subproject associated with the Project
+            // Delete subprojects associated with Project
             while (rs.next()) {
                 int subprojectId = rs.getInt("SubprojectId");
                 deleteTasksForSubproject(subprojectId);
@@ -714,6 +714,10 @@ public class ProjectRepository {
         }
     }
     public void createUser(User newUser) {
+        if (newUser.getLogin() == null || newUser.getLogin().isEmpty()) {
+            newUser.setLogin(generateUniqueUserLogin(newUser.getUserName()));
+        }
+
         String insertUserSql = "INSERT INTO User (UserLogin, UserName, UserPassword, isAdmin, isProjectLead, Email, Location) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
              PreparedStatement pstmt = con.prepareStatement(insertUserSql)) {
@@ -730,6 +734,44 @@ public class ProjectRepository {
             e.printStackTrace();
         }
     }
+
+    public String generateUniqueUserLogin(String userName) {
+        String[] nameParts = userName.split(" ");
+        if (nameParts.length < 2) {
+            throw new IllegalArgumentException("Full name must consist of at least a first and last name.");
+        }
+
+        String firstName = nameParts[0];
+        String lastName = nameParts[nameParts.length - 1];
+        String loginPrefix = (firstName.substring(0, 2) + lastName.substring(0, 2)).toLowerCase();
+        int suffix = 1;
+        String userLogin;
+
+        do {
+            userLogin = loginPrefix + String.format("%02d", suffix);
+            suffix++;
+        } while (userLoginExists(userLogin));
+
+        return userLogin;
+    }
+
+    public boolean userLoginExists(String userLogin) {
+        String checkUserLoginSql = "SELECT COUNT(*) FROM User WHERE UserLogin = ?";
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+             PreparedStatement pstmt = con.prepareStatement(checkUserLoginSql)) {
+            pstmt.setString(1, userLogin);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
     public List<Project> adminGetProjects(int adminUserId) {
         List<Project> projects = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
