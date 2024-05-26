@@ -52,6 +52,12 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_0D680DC0572A459CA17E7B2F8BE35F88 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3DC31CFE93894FC4871B95C3887E0CF5 }}
 
+      - name: Set up application properties
+        run: |
+          echo "DB_URL=${{ secrets.DB_URL }}" >> $GITHUB_WORKSPACE/application.properties
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> $GITHUB_WORKSPACE/application.properties
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_WORKSPACE/application.properties
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
