@@ -116,6 +116,7 @@ footer {
     text-align: center;
     padding: 20px 10px;
     width: 100%;
+
 }
 
 footer a:hover {
@@ -424,12 +425,8 @@ select:focus {
     align-items: center;
     text-decoration: none;
 }
-/*TODO Your font family?*/
-.site-header .home-link h1 {
-    color: var(--text-color);
-    font-family: 'Your font family';
-    margin: 0;
-}
+
+
 
 .site-header {
     display: flex;
