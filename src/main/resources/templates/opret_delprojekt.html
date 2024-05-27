@@ -17,6 +17,10 @@
                 <label for="subProjectName">Delprojekt titel:</label>
                 <input type="text" th:field="*{projectName}" id="subProjectName" class="form-control" required>
             </div>
+            <div class="form-description">
+                <label for="description">Delprojektbeskrivelse:</label>
+                <textarea th:field="*{description}" id="description" class="form-control"></textarea>
+            </div>
             <br>
             <div class="button-container">
                 <button type="submit" class="new-btn-project">Tilføj delprojekt!</button>

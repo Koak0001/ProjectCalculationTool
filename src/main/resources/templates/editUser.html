@@ -18,8 +18,10 @@
         <input type="text" id="userLogin" th:field="*{login}" class="form-control" required readonly />
       </div>
       <div class="form-project">
-        <label for="userName">Navn:</label>
-        <input type="text" id="userName" th:field="*{userName}" class="form-control" required />
+        <label for="userName">For- og efternavn:</label>
+        <input type="text" id="userName" th:field="*{userName}" class="form-control" required
+               pattern="(?:\b\w{2,}\b.*){2,}"
+               title="Indtast for- og efternavn." />
       </div>
       <div class="form-project">
         <label for="userPassword">Kodeord:</label>
@@ -45,8 +47,16 @@
       </div>
       <div class="form-project">
         <label for="location">By:</label>
-        <input type="text" id="location" th:field="*{location}" class="form-control" required />
+        <select id="location" th:field="*{location}" class="form-control" required>
+          <option value="" disabled selected>Vælg By</option>
+          <option value="København">København</option>
+          <option value="Oslo">Oslo</option>
+          <option value="Dallas">Dallas</option>
+          <option value="Los Angeles">Los Angeles</option>
+          <option value="New Jersey">New Jersey</option>
+        </select>
       </div>
+
 
       <div class="button-container">
         <button type="submit" class="new-btn-project">Opdater bruger</button>

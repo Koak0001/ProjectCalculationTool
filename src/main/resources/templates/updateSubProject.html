@@ -17,6 +17,11 @@
                 <label for="projectName">Delprojektets titel:</label>
                 <input type="text" id="projectName" name="projectName" th:value="${subProject.projectName}" class="form-control" required/>
             </div>
+            <div class="form-description">
+                <label for="description">Delprojektbeskrivelse:</label>
+                <textarea th:field="${subProject.description}" id="description" class="form-control"></textarea>
+            </div>
+            <br>
             <div class="button-container">
                 <button type="submit" class="new-btn-project">Afslut redigering</button>
                 <a href="/oversigt/projekter" class="project-button-project">Fortryd ændringer</a>

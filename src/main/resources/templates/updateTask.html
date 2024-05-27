@@ -17,6 +17,10 @@
                 <label for="taskName">Opgavens titel: </label>
                 <input type="text" id="taskName" name="taskName" th:value="${task.taskName}" class="form-control" required/>
             </div>
+            <div class="form-description">
+                <label for="description">Opgavebeskrivelse:</label>
+                <textarea th:field="${task.description}" id="description" class="form-control"></textarea>
+            </div>
             <div class="form-task">
                 <label for="hours">Forventet arbejdstid: </label>
                 <input type="number" id="hours" name="hours" th:value="${task.hours}" class="form-control" required/>

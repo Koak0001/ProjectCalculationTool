@@ -424,7 +424,7 @@ select:focus {
     align-items: center;
     text-decoration: none;
 }
-
+/*TODO Your font family?*/
 .site-header .home-link h1 {
     color: var(--text-color);
     font-family: 'Your font family';
@@ -484,13 +484,6 @@ input[type="submit"] {
 }
 
 
-
-
-
-
-
-
-
 .container {
     width: 90%;
     margin: 70px auto 30px;
@@ -498,6 +491,12 @@ input[type="submit"] {
     border-radius: 8px;
     background-color: #f9f9f9;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+.container .btn-danger {
+    position: absolute;
+    top: 20px;
+    right: 20px;
 }
 
 
