@@ -456,7 +456,7 @@ public class ProjectController {
 
     @PostMapping("/slet_delprojekt/{subProjectName}")
     public String deleteSubProject(@RequestParam int subProjectId) {
-        projectService.deleteProject(subProjectId);
+        projectService.deleteSubProject(subProjectId);
         return "redirect:/oversigt/projekter";
     }
 

@@ -3,6 +3,7 @@ package projectcalculationtool.model;
 public class Task {
     private String taskName;
     private String role;
+    private String description = "Ingen beskrivelse";
     private int projectId;
     private int taskId;
     private int hours;
@@ -15,13 +16,8 @@ public class Task {
         return taskName;
     }
 
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
-    }
-
-    public int getProjectId() {
-        return projectId;
-    }
+    public void setTaskName(String taskName) {this.taskName = taskName;}
+    public int getProjectId() {return projectId;}
 
 
     public void setProjectId(int projectId) {
@@ -50,4 +46,6 @@ public class Task {
     public void setRole(String role) {
     this.role = role;
 }
+    public String getDescription() {return description;}
+    public void setDescription(String description) {this.description = description;}
 }

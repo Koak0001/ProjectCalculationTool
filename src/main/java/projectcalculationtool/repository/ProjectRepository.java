@@ -108,10 +108,13 @@ public class ProjectRepository {
             while (resultSet.next()) {
                 int subprojectId = resultSet.getInt("SubprojectId");
                 String subprojectName = resultSet.getString("SubprojectName");
+                String description = resultSet.getString("Description");
+
                 int hours = getTotalHoursForSubproject(subprojectId);
 
                 SubProject subproject = new SubProject(subprojectName);
                 subproject.setProjectId(subprojectId);
+                subproject.setDescription(description);
                 subproject.setHours(hours);
                 subproject.setUserRole(userRole);
                 subprojects.add(subproject);
@@ -337,7 +340,9 @@ public class ProjectRepository {
             ResultSet resultSet = psts.executeQuery();
             if (resultSet.next()) {
                 String subProjectName = resultSet.getString("SubProjectName");
+                String description = resultSet.getString("Description");
                 subProject = new SubProject(subProjectName);
+                subProject.setDescription(description);
                 subProject.setProjectId(subProjectId);
 
             }
@@ -351,9 +356,10 @@ public class ProjectRepository {
 
     public void addNewSubProject(SubProject newSubProject, int parentId) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String insertSubprojectSql = "INSERT INTO Subproject (SubprojectName) VALUES (?)";
+            String insertSubprojectSql = "INSERT INTO Subproject (SubprojectName, Description) VALUES (?, ?)";
             PreparedStatement pstmt = con.prepareStatement(insertSubprojectSql, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, newSubProject.getProjectName());
+            pstmt.setString(2, newSubProject.getDescription());
             pstmt.executeUpdate();
 
             ResultSet rs = pstmt.getGeneratedKeys();
@@ -375,10 +381,11 @@ public class ProjectRepository {
 
     public void updateSubProject(SubProject updatedSubProject) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String updateSubProjectSql = "UPDATE Subproject SET SubprojectName = ? WHERE SubprojectId = ?";
+            String updateSubProjectSql = "UPDATE Subproject SET SubprojectName = ?, Description = ? WHERE SubprojectId = ?";
             PreparedStatement pstmt = con.prepareStatement(updateSubProjectSql);
             pstmt.setString(1, updatedSubProject.getProjectName());
-            pstmt.setInt(2, updatedSubProject.getProjectId());
+            pstmt.setString(2, updatedSubProject.getDescription());
+            pstmt.setInt(3, updatedSubProject.getProjectId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error updating subproject");
@@ -389,10 +396,11 @@ public class ProjectRepository {
 
     public void addNewTask(Task newTask, int parentId) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String insertTaskSql = "INSERT INTO Task (TaskName, Hours) VALUES (?, ?)";
+            String insertTaskSql = "INSERT INTO Task (TaskName, Description, Hours) VALUES (?, ?, ?)";
             PreparedStatement pstmt = con.prepareStatement(insertTaskSql, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, newTask.getTaskName());
-            pstmt.setInt(2, newTask.getHours());
+            pstmt.setString(2, newTask.getDescription());
+            pstmt.setInt(3, newTask.getHours());
             pstmt.executeUpdate();
 
             ResultSet rs = pstmt.getGeneratedKeys();
@@ -440,7 +448,7 @@ public class ProjectRepository {
     public List<Task> getTasks(int subProjectId, String userRole) {
         List<Task> tasks = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String sql = "SELECT T.TaskId, T.TaskName, T.Hours " +
+            String sql = "SELECT T.* " +
                     "FROM Subproject_Task ST " +
                     "JOIN Task T ON ST.TaskId = T.TaskId " +
                     "WHERE ST.SubProjectId = ?";
@@ -450,10 +458,12 @@ public class ProjectRepository {
             while (resultSet.next()) {
                 int taskId = resultSet.getInt("TaskId");
                 String taskName = resultSet.getString("TaskName");
+                String description = resultSet.getString("Description");
                 int hours = resultSet.getInt("Hours");
                 Task task = new Task(taskName);
                 task.setTaskId(taskId);
                 task.setHours(hours);
+                task.setDescription(description);
                 task.setProjectId(subProjectId);
                 task.setRole(userRole);
                 tasks.add(task);
@@ -474,9 +484,11 @@ public class ProjectRepository {
             ResultSet resultSet = psts.executeQuery();
             if (resultSet.next()) {
                 String taskName = resultSet.getString("TaskName");
+                String description = resultSet.getString("Description");
                 int hours = resultSet.getInt("Hours");
                 task = new Task(taskName);
                 task.setTaskId(taskId);
+                task.setDescription(description);
                 task.setHours(hours);
 
             }
@@ -490,11 +502,12 @@ public class ProjectRepository {
 
     public void updateTask(Task updatedTask) {
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String updateTaskSql = "UPDATE Task SET TaskName = ?, Hours = ? WHERE TaskId = ?";
+            String updateTaskSql = "UPDATE Task SET TaskName = ?, Hours = ?, Description = ? WHERE TaskId = ?";
             PreparedStatement pstmt = con.prepareStatement(updateTaskSql);
             pstmt.setString(1, updatedTask.getTaskName());
             pstmt.setInt(2, updatedTask.getHours());
-            pstmt.setInt(3, updatedTask.getTaskId());
+            pstmt.setString(3, updatedTask.getDescription());
+            pstmt.setInt(4, updatedTask.getTaskId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error updating task");

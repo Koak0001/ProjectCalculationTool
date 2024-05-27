@@ -22,13 +22,14 @@
         <button type="submit" class="btn btn-danger" onclick="return confirm('Advarsel! Dette er en permanent handling og projektet slettes permanent fra databasen!')">Slet projektet</button>
     </form>
     <h4 th:if="${subprojects.isEmpty()}" th:text="'Ingen delprojekter fundet for '+ ${project.projectName}"></h4>
-    <p th:text="${project.description}"></p>
     <h2 class="section-title">Dine delprojekter:</h2>
     <div class="project-container">
         <div th:if="${subprojects != null}" th:each="subProject : ${subprojects}" class="item-list">
             <h2 th:text="${subProject.projectName}"></h2>
+            <p>Projektbeskrivelse: </p>
+            <p th:text="${subProject.description}"></p>
             <a th:href="@{'/oversigt/' + ${subProject.projectName} + '/opgaver'+'?subProjectId=' + ${subProject.projectId} + '&userRole=' + ${subProject.userRole} + '&archived='+${project.isArchived()}}" class="view-subproject-btn">Se delprojekt!</a>
-            <p th:text="${subProject.hours}"></p>
+            <p th:text="'Forventes afsluttet efter ' + ${subProject.hours} + ' arbejdstimer.'"></p>
         </div>
     </div>
 </div>

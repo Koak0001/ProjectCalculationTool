@@ -23,11 +23,16 @@
     <div class="project-container" th:if="${tasks != null}">
         <div th:each="task : ${tasks}" class="item-list">
             <h2 th:text="${task.taskName}"></h2>
+            <p>Opgavebeskrivelse: </p>
+            <p th:text="${task.description}"></p>
             <a th:href="@{'/oversigt/' + ${subProjectName} + '/' + ${task.taskName} +'?subProjectId=' + ${subProjectId} + '&taskId='+ ${task.taskId} + '&userRole=' + ${role} + '&archived=' +${archived}}"
                class="view-subproject-btn">Se opgave!</a>
             <p th:text="${task.hours}"></p>
         </div>
     </div>
+    <form th:if="${#strings.equalsIgnoreCase(role, 'projektleder')}" th:action="@{'/oversigt/slet_delprojekt/' + ${subProjectName} +'?subProjectId=' + ${subProjectId}}" method="post" class="inline-form">
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Advarsel! Dette er en permanent handling og delprojektet slettes permanent fra databasen!')">Slet delprojektet</button>
+    </form>
 </div>
 </body>
 </html>
