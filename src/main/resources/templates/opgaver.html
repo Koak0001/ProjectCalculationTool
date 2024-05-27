@@ -19,7 +19,7 @@
            th:href="@{'/oversigt/' + ${subProjectName} + '/rediger_delprojekt/'+ ${subProjectId} +'?subProjectId=' +${subProjectId}}"
            class="action-btn new-btn">Rediger delprojekt</a>
     </div>
-
+    <h2 class="section-title">Dine opgaver:</h2>
     <div class="project-container" th:if="${tasks != null}">
         <div th:each="task : ${tasks}" class="item-list">
             <h2 th:text="${task.taskName}"></h2>

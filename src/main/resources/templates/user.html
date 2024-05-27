@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Bruger Information</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
 <body>
-<h2>Bruger Information:</h2>
-<div>
-    <p><strong>Navn: </strong> <span th:text="${user.userName}"></span></p>
-    <p><strong>Email: </strong> <span th:text="${user.email}"></span></p>
-    <p><strong>By: </strong> <span th:text="${user.location}"></span></p>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container">
+    <h4 class="section-title">Bruger Information</h4>
+    <div class="project-container">
+        <div class="item-list">
+            <p><strong>Navn: </strong><span th:text="${user.userName}"></span></p>
+            <p><strong>Email: </strong><span th:text="${user.email}"></span></p>
+            <p><strong>By: </strong><span th:text="${user.location}"></span></p>
+        </div>
+    </div>
 </div>
 </body>
 </html>

@@ -3,48 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <title>Projektgruppe</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
-<h4 th:text="${'Rediger_projektgruppen for ' + project.projectName}"></h4>
 <body>
-
-<br>
-
-<a  th:href="@{'/oversigt/' + ${project.projectName} + '/tilfoej_medlem' +'?projectId=' + ${project.projectId}}">Tilføj personale til projektgruppen </a>
-
-<br>
-
-<h4>Gruppens medlemmer</h4>
-<table>
-    <thead>
-    <tr>
-        <th>Projektrolle</th>
-        <th>Navn</th>
-        <th>Email</th>
-        <th>By</th>
-        <th>Rediger tilladelser</th>
-        <th>                   </th>
-        <th>Handlinger</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="user : ${users}">
-        <td th:text="${user.projectRole}"></td>
-        <td th:text="${user.userName}"></td>
-        <td th:text="${user.email}"></td>
-        <td th:text="${user.location}"></td>
-        <td>
-            <a th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projektgruppe/' + ${user.userName} + '?projectId=' + ${project.projectId} + '&userId=' + ${user.userId}}" class="user-button">Rediger tilladelser</a>
-        </td>
-        <td>
-            <p> </p>
-        </td>
-        <td>
-            <form th:action="@{'/oversigt/' + ${project.projectName} + '/fjern_bruger' + '?userId=' + ${user.userId} + '&projectId=' + ${project.projectId} + '&roleId=' + ${user.roleId}}" method="post">
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Fjern bruger fra projektgruppen?')">Fjern fra projektgruppen</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container">
+    <h4 class="section-title" th:text="${'Rediger projektgruppen for ' + project.projectName}"></h4>
+    <div class="project-actions">
+        <a class="new-btn" th:href="@{'/oversigt/' + ${project.projectName} + '/tilfoej_medlem' +'?projectId=' + ${project.projectId}}">Tilføj personale til projektgruppen</a>
+    </div>
+    <h4 class="section-title">Medlemmer i gruppen:</h4>
+    <table class="styled-table no-background">
+        <thead>
+        <tr>
+            <th>Projektrolle</th>
+            <th>Navn</th>
+            <th>Email</th>
+            <th>By</th>
+            <th>Rediger tilladelser</th>
+            <th></th>
+            <th>Handlinger</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.projectRole}"></td>
+            <td th:text="${user.userName}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.location}"></td>
+            <td>
+                <a th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projektgruppe/' + ${user.userName} + '?projectId=' + ${project.projectId} + '&userId=' + ${user.userId}}" class="action-btn">Rediger tilladelser</a>
+            </td>
+            <td></td>
+            <td>
+                <form th:action="@{'/oversigt/' + ${project.projectName} + '/fjern_bruger' + '?userId=' + ${user.userId} + '&projectId=' + ${project.projectId} + '&roleId=' + ${user.roleId}}" method="post" class="inline-form">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Fjern bruger fra projektgruppen?')">Fjern fra projektgruppen</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>

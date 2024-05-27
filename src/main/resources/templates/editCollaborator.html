@@ -3,24 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Rediger gruppemedlem</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
-<body>
-<p th:text="'Username: ' + ${user.userName}"></p>
-<p th:text="'Email: ' + ${user.email}"></p>
-<p th:text="'Country: ' + ${user.location}"></p>
-<br>
-<br>
-<form method="post" th:action="@{'/oversigt/' + ${project.projectName} + '/rediger_projektgruppe/' + ${user.userName}}">
-    <input type="hidden" name="projectId" th:value="${project.projectId}" />
-    <input type="hidden" name="userId" th:value="${user.userId}" />
-    <select name="roleValue" required>
-        <option value="" disabled selected>Vælg en rolle</option>
-        <option value="1">Observatør</option>
-        <option value="2">Sekundær projektleder</option>
-        <option value="3">Udvikler</option>
-    </select>
-    <button type="submit">Opdater rolle</button>
-    <a href="/oversigt/projekter" class="btn btn-secondary">Fortryd ændringer</a>
-</form>
+<body class="no-scroll">
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container-project">
+    <div class="form-wrapper">
+        <h4 class="section-title-project">Rediger tilladelser:</h4>
+        <br>
+        <div class="form-project">
+            <p><strong>Navn: </strong><span th:text="${user.userName}"></span></p>
+            <p><strong>Email: </strong><span th:text="${user.email}"></span></p>
+            <p><strong>By: </strong><span th:text="${user.location}"></span></p>
+            <br>
+        </div>
+        <form method="post" th:action="@{'/oversigt/' + ${project.projectName} + '/rediger_projektgruppe/' + ${user.userName}}">
+            <input type="hidden" name="projectId" th:value="${project.projectId}" />
+            <input type="hidden" name="userId" th:value="${user.userId}" />
+            <select name="roleValue" class="form-control" required>
+                <option value="" disabled selected>Vælg en rolle</option>
+                <option value="1">Observatør</option>
+                <option value="2">Sekundær projektleder</option>
+                <option value="3">Udvikler</option>
+            </select>
+            <div class="button-container">
+                <br>
+                <button type="submit" class="new-btn-project">Opdater rolle</button>
+                <a href="/oversigt/projekter" class="project-button-project">Fortryd ændringer</a>
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 </html>

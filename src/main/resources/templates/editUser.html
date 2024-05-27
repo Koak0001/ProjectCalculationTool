@@ -1,52 +1,63 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8">
+  <title>Rediger Bruger</title>
+  <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
-<body>
-<form th:action="@{'/oversigt/rediger_bruger/' + ${user.userId}}" th:object="${user}" method="post">
-  <input type="hidden" th:field="*{userId}" />
+<body class="no-scroll">
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container-project">
+  <div class="form-wrapper">
+  <h2 class="section-title-project">Rediger bruger:</h2>
+    <form th:action="@{'/oversigt/rediger_bruger/' + ${user.userId}}" th:object="${user}" method="post">
+      <input type="hidden" th:field="*{userId}" />
 
-  <label for="userLogin">Brugernavn:</label>
-  <input type="text" id="userLogin" th:field="*{login}" required readonly />
+      <div class="form-project">
+        <label for="userLogin">Brugernavn:</label>
+        <input type="text" id="userLogin" th:field="*{login}" class="form-control" required readonly />
+      </div>
+      <div class="form-project">
+        <label for="userName">Navn:</label>
+        <input type="text" id="userName" th:field="*{userName}" class="form-control" required />
+      </div>
+      <div class="form-project">
+        <label for="userPassword">Kodeord:</label>
+        <input type="password" id="userPassword" th:field="*{password}" class="form-control" />
+      </div>
+      <div class="form-project">
+        <label for="admin">Admin:</label>
+        <select id="admin" th:field="*{admin}" class="form-control">
+          <option value="true" th:selected="${user.admin} == true">Ja</option>
+          <option value="false" th:selected="${user.admin} == false">Nej</option>
+        </select>
+      </div>
+      <div class="form-project">
+        <label for="projectLead">Projektleder:</label>
+        <select id="projectLead" th:field="*{projectLead}" class="form-control">
+          <option value="true" th:selected="${user.projectLead} == true">Ja</option>
+          <option value="false" th:selected="${user.projectLead} == false">Nej</option>
+        </select>
+      </div>
+      <div class="form-project">
+        <label for="email">Email:</label>
+        <input type="email" id="email" th:field="*{email}" class="form-control" required />
+      </div>
+      <div class="form-project">
+        <label for="location">By:</label>
+        <input type="text" id="location" th:field="*{location}" class="form-control" required />
+      </div>
 
-  <label for="userName">Navn:</label>
-  <input type="text" id="userName" th:field="*{userName}" required />
+      <div class="button-container">
+        <button type="submit" class="new-btn-project">Opdater bruger</button>
+        <a href="/oversigt/administrator" class="project-button-project">Fortryd ændringer</a>
+      </div>
+    </form>
 
-  <label for="userPassword">Kodeord:</label>
-  <input type="password" id="userPassword" th:field="*{password}"/>
-
-  <label for="admin">Admin:</label>
-  <select id="admin" th:field="*{admin}">
-    <option value="true" th:selected="${user.admin} == true">Ja</option>
-    <option value="false" th:selected="${user.admin} == false">Nej</option>
-  </select>
-
-  <label for="projectLead">Projektleder:</label>
-  <select id="projectLead" th:field="*{projectLead}">
-    <option value="true" th:selected="${user.projectLead} == true">Ja</option>
-    <option value="false" th:selected="${user.projectLead} == false">Nej</option>
-  </select>
-
-  <label for="email">Email:</label>
-  <input type="email" id="email" th:field="*{email}" required />
-
-  <label for="location">By:</label>
-  <input type="text" id="location" th:field="*{location}" required />
-
-  <button type="submit" class="btn btn-primary">Opdater bruger</button>
-  <a href="/oversigt/administrator" class="btn btn-secondary" role="button">Fortryd ændringer</a>
-</form>
-
-<br>
-
-<form th:action="@{'/oversigt/slet_bruger/' + ${user.userName} +'?userId=' + ${user.userId}}" method="post">
-  <button type="submit" class="btn btn-danger" onclick="return confirm('Advarsel! Dette er en permanent handling og brugeren slettes permanent fra databasen!')">Slet bruger</button>
-</form>
-<br>
-<br>
-<br>
-<br>
+    <form th:action="@{'/oversigt/slet_bruger/' + ${user.userName} +'?userId=' + ${user.userId}}" method="post" class="form-project">
+      <button type="submit" class="new-btn-project" style="background-color: #f17575;" onclick="return confirm('Advarsel! Dette er en permanent handling og brugeren slettes permanent fra databasen!')">Slet bruger</button>
+    </form>
+  </div>
+</div>
 </body>
 </html>

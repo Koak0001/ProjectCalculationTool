@@ -8,21 +8,21 @@
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="container">
-<a th:if="${user.isProjectLead}" th:href="@{/oversigt/nytprojekt}" class="new-btn">Opret nyt projekt</a>
-<a th:if="${user.isAdmin}" th:href="@{/oversigt/administrator}" class="new-btn">Administrator menu</a>
+    <a th:if="${user.isProjectLead}" th:href="@{/oversigt/nytprojekt}" class="new-btn">Opret nyt projekt</a>
+    <a th:if="${user.isAdmin}" th:href="@{/oversigt/administrator}" class="new-btn">Administrator menu</a>
 
-<h2 class="section-title">Dine Projekter:</h2>
+    <h2 class="section-title">Dine projekter:</h2>
     <div class="project-container">
-<div th:each="project : ${projects}" class="item-list">
-    <h2 th:text="${project.projectName}"></h2>
-    <h4 th:text="${project.userRole}"></h4>
-    <p th:text="${project.description}"></p>
-    <p th:text="${project.deadline}"></p>
-    <p th:text="${project.hours}"></p>
-    <a th:href="@{'/oversigt/' + ${project.projectName} + '?projectId=' + ${project.projectId} + '&userRole=' + ${project.userRole}}" class="project-button">Se projekt</a>
-    <br>
-</div>
-</div>
+        <div th:each="project : ${projects}" class="item-list">
+            <h2 th:text="${project.projectName}"></h2>
+            <h4 th:text="${project.userRole}"></h4>
+            <p th:text="${project.description}"></p>
+            <p th:text="${project.deadline}"></p>
+            <p th:text="${project.hours}"></p>
+            <a th:href="@{'/oversigt/' + ${project.projectName} + '?projectId=' + ${project.projectId} + '&userRole=' + ${project.userRole}}" class="project-button">Se projekt</a>
+            <br>
+        </div>
+    </div>
 </div>
 </body>
 </html>
