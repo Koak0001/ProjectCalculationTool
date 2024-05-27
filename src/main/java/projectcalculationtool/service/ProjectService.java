@@ -1,4 +1,5 @@
 package projectcalculationtool.service;
+import jakarta.servlet.http.HttpServletRequest;
 import projectcalculationtool.model.User;
 import org.springframework.stereotype.Service;
 import projectcalculationtool.model.Project;
@@ -39,11 +40,11 @@ public class ProjectService {
     public List<Task> getTasks(int projectId, String role) {return projectRepository.getTasks(projectId, role);}
 
     // User calls and functionality
-    public void login(String userLogin, String password) {projectRepository.login(userLogin, password);}
+    public User login(String userLogin, String password) {return projectRepository.checkUser(userLogin, password);}
     public void addUserToProject(int userId, int projectId, int roleId) {projectRepository.addUserToProject(userId, projectId, roleId);}
     public void updateCollaboratorRole(int projectId, int userId, int roleId) {projectRepository.updateCollaboratorRole(projectId, userId, roleId);}
     public void removeCollaborator(int userId, int projectId, int roleId) {projectRepository.removeCollaborator(userId,projectId,roleId);}
-    public User getLoggedInUser() {return projectRepository.getLoggedInUser();}
+    public User getLoggedInUser(HttpServletRequest request) {return projectRepository.getLoggedInUser(request);}
     public User getUser(int userId) {return projectRepository.getUser(userId);}
     public List<User> getAvailableUsers(int projectId) {return projectRepository.getAvailableUsers(projectId);}
     public List<User> getAssociatedUsers(int projectId) {return projectRepository.getAssociatedUsers(projectId);}

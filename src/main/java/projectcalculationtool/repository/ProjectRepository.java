@@ -1,5 +1,7 @@
 package projectcalculationtool.repository;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import projectcalculationtool.model.Project;
@@ -21,19 +23,14 @@ public class ProjectRepository {
     @Value("${spring.datasource.password}")
     String dbPassword;
 
-    private User loggedInUser = new User();
-
-
-    public void login(String userLogin, String password) {
-        User user = checkUser(userLogin, password);
-        if (user != null) {
-            this.loggedInUser = user;
+    public User getLoggedInUser(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            return (User) session.getAttribute("loggedInUser");
         }
+        return null;
     }
 
-    public User getLoggedInUser() {
-        return loggedInUser;
-    }
 
     public List<Project> getProjects(int userId, boolean archived) {
         List<Project> projects = new ArrayList<>();

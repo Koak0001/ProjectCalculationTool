@@ -7,8 +7,7 @@
 <body>
 
 <form th:action="@{/oversigt/administrator/opret_bruger}" th:object="${user}" method="post">
-    <label for="userLogin">Brugernavn:</label>
-    <input type="text" id="userLogin" th:field="*{login}" required />
+    <input type="hidden" th:field="*{login}" />
 
     <label for="userName">Navn:</label>
     <input type="text" id="userName" th:field="*{userName}" required />
