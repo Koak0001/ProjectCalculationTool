@@ -3,41 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <title>Ny bruger</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
-<body>
+<body class="no-scroll">
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container-project">
+    <div class="form-wrapper">
+    <h2 class="section-title-project">Opret ny bruger:</h2>
+        <form th:action="@{/oversigt/administrator/opret_bruger}" th:object="${user}" method="post">
+            <input type="hidden" th:field="*{login}" />
 
-<form th:action="@{/oversigt/administrator/opret_bruger}" th:object="${user}" method="post">
-    <label for="userLogin">Brugernavn:</label>
-    <input type="text" id="userLogin" th:field="*{login}" required />
-
-    <label for="userName">Navn:</label>
-    <input type="text" id="userName" th:field="*{userName}" required />
-
-    <label for="userPassword">Kodeord:</label>
-    <input type="password" id="userPassword" th:field="*{password}" required />
-
-    <label for="admin">Admin:</label>
-    <select id="admin" th:field="*{admin}">
-        <option value="true">Ja</option>
-        <option value="false">Nej</option>
-    </select>
-
-    <label for="projectLead">Projektleder:</label>
-    <select id="projectLead" th:field="*{projectLead}">
-        <option value="true">Ja</option>
-        <option value="false">Nej</option>
-    </select>
-
-    <label for="email">Email:</label>
-    <input type="email" id="email" th:field="*{email}" required />
-
-    <label for="location">By:</label>
-    <input type="text" id="location" th:field="*{location}" required />
-
-    <button type="submit" class="btn btn-primary">Opret bruger</button>
-    <a href="/oversigt/administrator" class="btn btn-secondary" role="button">Annuller</a>
-</form>
-
-
+            <div class="form-project">
+                <label for="userName">Navn:</label>
+                <input type="text" id="userName" th:field="*{userName}" class="form-control" required />
+            </div>
+            <div class="form-project">
+                <label for="userPassword">Kodeord:</label>
+                <input type="password" id="userPassword" th:field="*{password}" class="form-control" required />
+            </div>
+            <div class="form-project">
+                <label for="admin">Admin:</label>
+                <select id="admin" th:field="*{admin}" class="form-control">
+                    <option value="true">Ja</option>
+                    <option value="false">Nej</option>
+                </select>
+            </div>
+            <div class="form-project">
+                <label for="projectLead">Projektleder:</label>
+                <select id="projectLead" th:field="*{projectLead}" class="form-control">
+                    <option value="true">Ja</option>
+                    <option value="false">Nej</option>
+                </select>
+            </div>
+            <div class="form-project">
+                <label for="email">Email:</label>
+                <input type="email" id="email" th:field="*{email}" class="form-control" required />
+            </div>
+            <div class="form-project">
+                <label for="location">By:</label>
+                <input type="text" id="location" th:field="*{location}" class="form-control" required />
+            </div>
+            <div class="button-container">
+                <button type="submit" class="new-btn-project">Opret bruger</button>
+                <a href="/oversigt/administrator" class="project-button-project">Annuller</a>
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 </html>

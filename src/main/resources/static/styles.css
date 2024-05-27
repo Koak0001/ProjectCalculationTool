@@ -484,14 +484,22 @@ input[type="submit"] {
 }
 
 
+
+
+
+
+
+
+
 .container {
     width: 90%;
     margin: 70px auto 30px;
-    background-color: #f9f9f9;
     padding: 20px;
     border-radius: 8px;
+    background-color: #f9f9f9;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 
 .section-title {
     font-size: 28px;
@@ -499,40 +507,34 @@ input[type="submit"] {
     color: cornflowerblue;
 }
 
+
 .project-container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
 }
+
 
 .item-list {
-    width: 30%;
-    margin-bottom: 20px;
-    background-color: white;
+    flex: 1 1 calc(33.333% - 40px);
+    box-sizing: border-box;
     padding: 15px;
     border-radius: 8px;
+    background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.item-list h2 {
-    font-size: 24px;
-    margin-bottom: 5px;
-    color: #333;
-}
-
-.item-list h4 {
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: #666;
+    margin: 10px;
 }
 
 .item-list p {
     font-size: 16px;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     color: #444;
 }
 
-.new-btn, .project-button, .view-subproject-btn {
+
+.new-btn, .project-button, .view-subproject-btn, .action-btn, .btn-danger {
     display: inline-block;
     padding: 6px 12px;
     background-color: #70c3f6;
@@ -546,8 +548,16 @@ input[type="submit"] {
     transition-duration: 0.4s;
 }
 
-.new-btn:hover, .project-button:hover, .view-subproject-btn:hover {
+.new-btn:hover, .project-button:hover, .view-subproject-btn:hover, .action-btn:hover, .btn-danger:hover {
     background-color: #559ecd;
+}
+
+.btn-danger {
+    background-color: #f66;
+}
+
+.btn-danger:hover {
+    background-color: #d44;
 }
 
 
@@ -557,22 +567,78 @@ input[type="submit"] {
     margin-bottom: 20px;
 }
 
-.action-btn {
-    padding: 10px 20px;
-    background-color: #70c3f6;
-    color: white;
-    text-decoration: none;
-    font-size: 14px;
-    cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    transition-duration: 0.4s;
-    text-align: center;
+
+.task-title {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
 }
 
-.action-btn:hover {
-    background-color: #559ecd;
+.task-details {
+    padding: 15px;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
+
+.task-details h2 {
+    font-size: 20px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.task-details p {
+    font-size: 16px;
+    color: #444;
+}
+
+.task-actions {
+    margin-top: 20px;
+}
+
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 18px;
+    text-align: left;
+}
+
+.styled-table th, .styled-table td {
+    padding: 12px 15px;
+}
+
+.styled-table thead tr {
+    background-color: #70c3f6;
+    color: white;
+    text-align: left;
+    font-weight: bold;
+}
+
+.styled-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+    border-bottom: 2px solid #70c3f6;
+}
+
+.styled-table tbody tr.active-row {
+    font-weight: bold;
+    color: #70c3f6;
+}
+
+.styled-table.no-background {
+    background-color: transparent;
+    box-shadow: none;
+}
+
 
 .inline-form {
     display: inline;
@@ -581,6 +647,11 @@ input[type="submit"] {
     background: none;
     border: none;
 }
+
+
+
+
+
 
 
 
@@ -675,3 +746,46 @@ body.no-scroll {
 }
 
 
+
+.container-admin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    box-sizing: border-box;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 5vw;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    margin: 50px auto;
+    border-bottom: white;
+    max-width: 600px;
+}
+
+
+.admin-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.admin-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #70c3f6;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    border: none;
+    border-radius: 4px;
+    transition-duration: 0.4s;
+}
+
+.admin-btn:hover {
+    background-color: #559ecd;
+}

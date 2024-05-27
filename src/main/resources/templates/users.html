@@ -3,46 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>Alle Brugere</title>
-    <h2 class="section-title">Bruger information for alle brugere:</h2>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
-<body>
-<br>
-<a th:href="@{/oversigt/administrator/opret_bruger}">Opret ny bruger</a>
-<br>
-
-<table>
-    <thead>
-    <tr>
-        <th>Bruger id</th>
-        <th>Brugernavn</th>
-        <th>Bruger kodeord</th>
-        <th>Navn</th>
-        <th>Email</th>
-        <th>By</th>
-        <th>Admin</th>
-        <th>Projektleder</th>
-        <th> </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="user : ${users}">
-        <td th:text="${user.userId}"></td>
-        <td th:text="${user.login}"></td>
-        <td th:text="${user.password}"></td>
-        <td th:text="${user.userName}"></td>
-        <td th:text="${user.email}"></td>
-        <td th:text="${user.location}"></td>
-        <td th:text="${user.adminStatus}"></td>
-        <td th:text="${user.projectLeadStatus}"></td>
-        <td>
-            <a th:href="@{'/oversigt/rediger_bruger/' + ${user.userId}}" th:text="'Rediger ' + ${user.userName}"></a>
-        </td>
-
-
-    </tr>
-    </tbody>
-</table>
-
-
+<body class="no-scroll">
+    <div class="container">
+        <h2 class="section-title">Bruger information for alle brugere:</h2>
+        <div class="project-actions">
+            <a th:href="@{/oversigt/administrator/opret_bruger}" class="new-btn">Opret ny bruger</a>
+        </div>
+        <table class="styled-table no-background">
+            <thead>
+            <tr>
+                <th>Bruger id</th>
+                <th>Brugernavn</th>
+                <th>Bruger kodeord</th>
+                <th>Navn</th>
+                <th>Email</th>
+                <th>By</th>
+                <th>Admin</th>
+                <th>Projektleder</th>
+                <th>Handlinger</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.userId}"></td>
+                <td th:text="${user.login}"></td>
+                <td th:text="${user.password}"></td>
+                <td th:text="${user.userName}"></td>
+                <td th:text="${user.email}"></td>
+                <td th:text="${user.location}"></td>
+                <td th:text="${user.adminStatus}"></td>
+                <td th:text="${user.projectLeadStatus}"></td>
+                <td>
+                    <a th:href="@{'/oversigt/rediger_bruger/' + ${user.userId}}" class="action-btn" th:text="'Rediger ' + ${user.userName}"></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 </body>
 </html>

@@ -35,28 +35,34 @@ public class ProjectController {
 
     @PostMapping(value = "/check-login")
     public String checkLogin(@RequestParam("login") String userLogin, @RequestParam("password") String password, HttpServletRequest request, Model model) {
-        projectService.login(userLogin, password);
-        if (projectService.getLoggedInUser() != null) {
+        User user = projectService.login(userLogin, password);
+        if (user != null) {
             HttpSession session = request.getSession();
-            session.setAttribute("userId", projectService.getLoggedInUser().getUserId());
+            session.setAttribute("loggedInUser", user);
             return "redirect:/oversigt/projekter";
         } else {
-            model.addAttribute("loginError", "Username or password is incorrect");
+            model.addAttribute("loginError", "Forkert brugernavn eller kodeord!");
             return "index";
         }
+    }
+    private User getLoggedInUser(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            return (User) session.getAttribute("loggedInUser");
+        }
+        return null;
     }
 
     @GetMapping(value = "/forside")
     public String index(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
-            return "index.html";
+            return "redirect:/oversigt/projekter";
         } else {
             return "redirect:/";
         }
     }
 
-//
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
@@ -70,25 +76,30 @@ public class ProjectController {
         return "redirect:/";
     }
 
-    //   View projects for user
+    // view projects with roles, deadlines, and hours
     @GetMapping("projekter")
-    public String getAllProjects(Model model) {
-        User user = projectService.getLoggedInUser();
-        int userId = user.getUserId();
-        List<Project> projects = projectService.getProjects(userId, false);
-        model.addAttribute("projects", projects);
-        model.addAttribute("user", user);
-        return "projekter";
-
+    public String getAllProjects(Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null) {
+            return "redirect:/";
+        } else {
+            int userId = user.getUserId();
+            List<Project> projects = projectService.getProjects(userId, false);
+            model.addAttribute("projects", projects);
+            model.addAttribute("user", user);
+            return "projekter";
+        }
     }
 
     @GetMapping("arkiv")
-    public String getArchivedProjects(Model model) {
-        User user = projectService.getLoggedInUser();
+    public String getArchivedProjects(Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null) {return "redirect:/";}
+        else {
         int userId = user.getUserId();
         List<Project> projects = projectService.getProjects(userId, true);
         model.addAttribute("projects", projects);
-        return "archive";
+        return "archive";}
     }
 
     @PostMapping("/arkiver_projekt")
@@ -107,82 +118,107 @@ public class ProjectController {
     @GetMapping("/{projectName}")
     public String getProject(@RequestParam int projectId,
                              @RequestParam String userRole,
-                             Model model) {
-        Project project = projectService.getProject(projectId);
-        List<SubProject> subProjects = projectService.getSubProjects(projectId, userRole);
-        model.addAttribute("project", project);
-        model.addAttribute("projectId", projectId);
-        model.addAttribute("role", userRole);
-        model.addAttribute("subprojects", subProjects);
-        return "projekt";
+                             Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null) {return "redirect:/";}
+        else {
+            Project project = projectService.getProject(projectId);
+            List<SubProject> subProjects = projectService.getSubProjects(projectId, userRole);
+            model.addAttribute("project", project);
+            model.addAttribute("projectId", projectId);
+            model.addAttribute("role", userRole);
+            model.addAttribute("subprojects", subProjects);
+            return "projekt";
+        }
     }
 
-
-    // View Subproject's tasks
+    // View subproject with tasks
     @GetMapping("/{projectName}/opgaver")
     public String getSubProject(@PathVariable String projectName,
                                 @RequestParam int subProjectId,
                                 @RequestParam String userRole, @RequestParam boolean archived,
-                                Model model) {
-        List<Task> tasks = projectService.getTasks(subProjectId, userRole);
-        model.addAttribute("tasks", tasks);
-        model.addAttribute("subProjectName", projectName);
-        model.addAttribute("role", userRole);
-        model.addAttribute("archived", archived);
-        model.addAttribute("subProjectId", subProjectId);
-        return "opgaver";
+                                Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null){return "redirect:/";}
+        else {
+            List<Task> tasks = projectService.getTasks(subProjectId, userRole);
+            model.addAttribute("tasks", tasks);
+            model.addAttribute("subProjectName", projectName);
+            model.addAttribute("role", userRole);
+            model.addAttribute("archived", archived);
+            model.addAttribute("subProjectId", subProjectId);
+            return "opgaver";
+        }
     }
 
     // View task
     @GetMapping("/{projectName}/{taskName}")
     public String getTask(@PathVariable String taskName, @RequestParam int subProjectId,
                           @RequestParam String userRole, @RequestParam int taskId, @RequestParam boolean archived,
-                          Model model) {
+                          Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null){return "redirect:/";}
+        else {
         Task task = projectService.getTask(taskId);
         model.addAttribute("task", task);
         model.addAttribute("taskName", taskName);
         model.addAttribute("subProjectId", subProjectId);
         model.addAttribute("role", userRole);
         model.addAttribute("archived", archived);
-        return "opgave";
+        return "opgave";}
     }
 
     @GetMapping("/nytprojekt")
-    public String showProjectForm(Model model) {
-        model.addAttribute("project", new Project(""));
-        if (projectService.getLoggedInUser().isProjectLead()) {
-            return "new_project";
-        } else return "no_permission";
+    public String showProjectForm(Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null){
+            return "redirect:/";
+        } else {
+            model.addAttribute("project", new Project(""));
+            if (projectService.getLoggedInUser(request).isProjectLead()) {
+                return "new_project";
+            } else return "no_permission";}
     }
 
     @PostMapping("/nytprojekt")
-    public String addProject(@ModelAttribute("project") Project project) {
-        User user = projectService.getLoggedInUser();
+    public String addProject(@ModelAttribute("project") Project project, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null){return "redirect:/";}
+        else {
         int projectLeadId = user.getUserId();
         projectService.addProject(project, projectLeadId);
-        return "redirect:/oversigt/projekter";
-    }
+        return "redirect:/oversigt/projekter";}
+        }
 
     @GetMapping("/{projectName}/rediger_projekt/{projectId}")
-    public String showUpdateProjectForm(@PathVariable int projectId, Model model) {
-        Project project = projectService.getProject(projectId);
-        model.addAttribute("project", project);
-        return "updateProject";
+    public String showUpdateProjectForm(@PathVariable int projectId, Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null) {
+            return "redirect:/";
+        } else {
+            Project project = projectService.getProject(projectId);
+            model.addAttribute("project", project);
+            return "updateProject"; }
     }
 
     @PostMapping("/{projectName}/rediger_projekt")
     public String updateProject(@ModelAttribute("project") Project project) {
+
         projectService.updateProject(project);
         return "redirect:/oversigt/projekter";
     }
 
     @GetMapping("/{projectName}/opret_delprojekt")
     public String showSubProjectForm(@RequestParam int parentProjectId, @PathVariable String projectName, Model
-            model) {
-        model.addAttribute("projectName", projectName);
-        model.addAttribute("projectId", parentProjectId);
-        model.addAttribute("subproject", new SubProject(""));
-        return "opret_delprojekt";
+            model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null) {return "redirect:/";}
+        else {
+            model.addAttribute("projectName", projectName);
+            model.addAttribute("projectId", parentProjectId);
+            model.addAttribute("subproject", new SubProject(""));
+            return "opret_delprojekt";
+        }
     }
 
     @PostMapping("/{projectName}/opret_delprojekt")
@@ -193,10 +229,13 @@ public class ProjectController {
     }
 
     @GetMapping("/{subProjectName}/rediger_delprojekt/{subProjectId}")
-    public String showUpdateSubProjectForm(@PathVariable int subProjectId, Model model) {
+    public String showUpdateSubProjectForm(@PathVariable int subProjectId, Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null) {return "redirect:/";}
+        else {
         SubProject subProject = projectService.getSubProject(subProjectId);
         model.addAttribute("subProject", subProject);
-        return "updateSubProject";
+        return "updateSubProject";}
     }
 
     @PostMapping("/{subProjectName}/rediger_delprojekt")
@@ -206,11 +245,15 @@ public class ProjectController {
     }
 
     @GetMapping("/{subProjectName}/opret_opgave")
-    public String showTaskForm(@RequestParam int parentProjectId, @PathVariable String subProjectName, Model model) {
-        model.addAttribute("subProjectName", subProjectName);
-        model.addAttribute("projectId", parentProjectId);
-        model.addAttribute("task", new Task(""));
-        return "opret_opgave";
+    public String showTaskForm(@RequestParam int parentProjectId,
+                               @PathVariable String subProjectName, Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null) {return "redirect:/";}
+        else {
+            model.addAttribute("subProjectName", subProjectName);
+            model.addAttribute("projectId", parentProjectId);
+            model.addAttribute("task", new Task(""));
+            return "opret_opgave";}
     }
 
     @PostMapping("/{subProjectName}/opret_opgave")
@@ -220,12 +263,15 @@ public class ProjectController {
     }
 
     @GetMapping("/{taskName}/rediger_opgave/{taskId}")
-    public String showUpdateTaskForm(@PathVariable int taskId, Model model) {
-        Task task = projectService.getTask(taskId);
-        model.addAttribute("task", task);
-        return "updateTask";
+    public String showUpdateTaskForm(@PathVariable int taskId, Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null) {return "redirect:/";}
+        else {
+            Task task = projectService.getTask(taskId);
+            model.addAttribute("task", task);
+            return "updateTask";
+        }
     }
-
     @PostMapping("/{taskName}/rediger_opgave")
     public String updateTask(@ModelAttribute("task") Task task) {
         projectService.updateTask(task);
@@ -233,32 +279,42 @@ public class ProjectController {
     }
 
     @GetMapping("/alle_brugere")
-    public String getAllUsers(Model model) {
-        List<User> users = projectService.getUsers();
-        model.addAttribute("users", users);
-        if (projectService.getLoggedInUser().isAdmin()) {
-            return "users";
-        } else return "no_permission";
-    }
-
-    @GetMapping("/bruger/{userId}")
-    public String getUser(@PathVariable("userId") int userId, Model model) {
-        User user = projectService.getUser(userId);
-        if (user != null) {
-            model.addAttribute("user", user);
-            return "user";
+    public String getAllUsers(Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null) {
+            return "redirect:/";
         } else {
-            return "user-not-found";
+            List<User> users = projectService.getUsers();
+            model.addAttribute("users", users);
+            if (user.isAdmin()) {
+                return "users";
+            } else return "no_permission";
+        }
+    }
+    @GetMapping("/bruger/{userId}")
+    public String getUser(@PathVariable("userId") int userId, Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null) {
+            return "redirect:/";
+        } else {
+            User userToView = projectService.getUser(userId);
+            model.addAttribute("user", userToView);
+            return "user";
         }
     }
 
     @GetMapping("{ProjectName}/tilfoej_medlem")
-    public String getAvailableUsers(@RequestParam int projectId, Model model) {
-        List<User> users = projectService.getAvailableUsers(projectId);
-        Project project = projectService.getProject(projectId);
-        model.addAttribute("project", project);
-        model.addAttribute("users", users);
-        return "addMemberToProject";
+    public String getAvailableUsers(@RequestParam int projectId, Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null) {
+            return "redirect:/";
+        } else {
+            List<User> users = projectService.getAvailableUsers(projectId);
+            Project project = projectService.getProject(projectId);
+            model.addAttribute("project", project);
+            model.addAttribute("users", users);
+            return "addMemberToProject";
+        }
     }
 
     @PostMapping("{ProjectName}/tilfoej_medlem")
@@ -268,38 +324,42 @@ public class ProjectController {
     }
 
     @GetMapping("{ProjectName}/rediger_projektgruppe")
-    public String getCollaborators(@RequestParam int projectId, Model model) {
-        List<User> users = projectService.getAssociatedUsers(projectId);
-        Project project = projectService.getProject(projectId);
+    public String getCollaborators(@RequestParam int projectId, Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null) {
+            return "redirect:/";
+        } else {
+            List<User> users = projectService.getAssociatedUsers(projectId);
+            Project project = projectService.getProject(projectId);
 
-        List<User> sortedUsers = users.stream()
-                .sorted(Comparator.comparingInt(this::getRolePriority))
-                .collect(Collectors.toList());
-        model.addAttribute("project", project);
-        model.addAttribute("users", sortedUsers);
-        return "editProjectGroup";
-    }
-
-    private int getRolePriority(User user) {
-        switch (user.getProjectRole()) {
-            case "Projektleder":
-                return 1;
-            case "Udvikler":
-                return 2;
-            case "Observatør":
-                return 3;
-            default:
-                return 4;
+            List<User> sortedUsers = users.stream()
+                    .sorted(Comparator.comparingInt(this::getRolePriority))
+                    .collect(Collectors.toList());
+            model.addAttribute("project", project);
+            model.addAttribute("users", sortedUsers);
+            return "editProjectGroup";
         }
+    }
+    private int getRolePriority(User user) {
+        return switch (user.getProjectRole()) {
+            case "Projektleder" -> 1;
+            case "Udvikler" -> 2;
+            case "Observatør" -> 3;
+            default -> 4;
+        };
     }
 
     @GetMapping("{ProjectName}/rediger_projektgruppe/{userName}")
-    public String editCollaborator(@RequestParam int projectId, @RequestParam int userId, Model model) {
-        User user = projectService.getUser(userId);
-        Project project = projectService.getProject(projectId);
-        model.addAttribute("user", user);
-        model.addAttribute("project", project);
-        return "editCollaborator";
+    public String editCollaborator(@RequestParam int projectId, @RequestParam int userId, Model model, HttpServletRequest request) {
+        if (projectService.getLoggedInUser(request) == null) {
+            return "redirect:/";
+        } else {
+            User user = projectService.getUser(userId);
+            Project project = projectService.getProject(projectId);
+            model.addAttribute("user", user);
+            model.addAttribute("project", project);
+            return "editCollaborator";
+        }
     }
 
     @PostMapping("{projectName}/rediger_projektgruppe/{userName}")
@@ -317,19 +377,28 @@ public class ProjectController {
     }
 
     @GetMapping("administrator")
-    public String adminPage() {
-        return "administrator";
+    public String adminPage(HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null) {
+            return "redirect:/";
+        } else if (!user.isAdmin()) {
+            return "no_permission";
+        } else {
+            return "administrator";
+        }
     }
 
     @GetMapping("/rediger_bruger/{userId}")
-    public String showUpdateUserForm(@PathVariable int userId, Model model) {
-        User user = projectService.getUser(userId);
-        model.addAttribute("user", user);
-        if (projectService.getLoggedInUser().isAdmin()) {
-            return "editUser";
-        } else {
+    public String showUpdateUserForm(@PathVariable int userId, Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null) {
+            return "redirect:/";
+        } else if (!user.isAdmin()) {
             return "no_permission";
-        }
+        } else {
+            User userToEdit = projectService.getUser(userId);
+            model.addAttribute("user", userToEdit);
+            return "editUser";}
     }
 
     @PostMapping("/rediger_bruger/{userId}")
@@ -339,8 +408,8 @@ public class ProjectController {
     }
 
     @PostMapping("/slet_bruger/{userName}")
-    public String deleteUser(@RequestParam int userId) {
-        if (projectService.getLoggedInUser().isAdmin()) {
+    public String deleteUser(@RequestParam int userId, HttpServletRequest request) {
+        if (projectService.getLoggedInUser(request).isAdmin()) {
             projectService.deleteUser(userId);
             return "redirect:/oversigt/administrator";
         } else {
@@ -348,13 +417,15 @@ public class ProjectController {
         }
     }
     @GetMapping("/administrator/opret_bruger")
-    public String showCreateUserForm(Model model) {
-        if (projectService.getLoggedInUser().isAdmin()) {
-        model.addAttribute("user", new User());
-        return "createUser";
-        } else {
-        return "no_permission";
-        }
+    public String showCreateUserForm(Model model, HttpServletRequest request) {
+            User user = getLoggedInUser(request);
+            if (user == null) {
+                return "redirect:/";
+            } else if (!user.isAdmin()) {
+                return "no_permission";
+            } else {
+                model.addAttribute("user", new User());
+                return "createUser";}
     }
 
     @PostMapping("/administrator/opret_bruger")
@@ -363,21 +434,36 @@ public class ProjectController {
         return "redirect:/oversigt/administrator";
     }
     @GetMapping("/administrator/projekter")
-    public String showProjects(Model model) {
-        if (projectService.getLoggedInUser().isAdmin()) {
-            int adminId = projectService.getLoggedInUser().getUserId();
+    public String showProjects(Model model, HttpServletRequest request) {
+        User user = getLoggedInUser(request);
+        if (user == null) {
+            return "redirect:/";
+        } else if (!user.isAdmin()) {
+            return "no_permission";
+        } else {
+            int adminId = user.getUserId();
             List<Project> projects =projectService.adminGetProjects(adminId);
             model.addAttribute("projects", projects);
             model.addAttribute("userId", adminId);
-            return "adminProjects";
-        } else {
-            return "no_permission";
-        }
+            return "adminProjects";}
     }
+
     @PostMapping("/administrator/overtag_projekt")
     public String insertAdminInProject(@RequestParam int projectId, @RequestParam int userId) {
         projectService.adminInsertIntoProject(projectId, userId);
         return "redirect:/oversigt/administrator";
+    }
+
+    @PostMapping("/slet_delprojekt/{subProjectName}")
+    public String deleteSubProject(@RequestParam int subProjectId) {
+        projectService.deleteProject(subProjectId);
+        return "redirect:/oversigt/projekter";
+    }
+
+    @PostMapping("/slet_opgave/{taskName}")
+    public String deleteTask(@RequestParam int taskId) {
+        projectService.deleteTask(taskId);
+        return "redirect:/oversigt/projekter";
     }
 
 }

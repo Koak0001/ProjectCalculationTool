@@ -8,37 +8,29 @@
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="container">
-<div class="project-actions" th:if="${project != null && !project.isArchived() &&  #strings.equalsIgnoreCase(role, 'projektleder')}">
-    <a  th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projekt/' + ${project.projectId} +'?projectId=' + ${project.projectId}}" class="action-btn">Rediger projekt</a>
-    <br>
-    <a  th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projektgruppe' +'?projectId=' + ${project.projectId}}" class="action-btn">Rediger projektgruppens medlemmer</a>
-    <br>
-    <a th:href="@{'/oversigt/' + ${project.projectName} + '/opret_delprojekt' +'?projectName=' + ${project.projectName} +'&parentProjectId=' + ${project.projectId}}" class="action-btn">Tilføj delprojekt</a>
-</div>
-<form th:if="${#strings.equalsIgnoreCase(role, 'projektleder')}" th:action="@{/oversigt/arkiver_projekt}" method="post" class="inline-form">
-    <input type="hidden" name="projectId" th:value="${project.projectId}" />
-    <input type="hidden" name="isArchived" th:value="${project.isArchived ? false : true}" />
-    <button type="submit"  class="action-btn" th:text="${project.isArchived} ? 'Flyt til aktuelle projekter' : 'Arkiver projekt'"></button>
-</form>
-</div>
-<br>
-<form th:if="${project != null && project.isArchived() &&  #strings.equalsIgnoreCase(role, 'projektleder')}" th:action="@{'/oversigt/slet_projekt/' + ${project.projectName} +'?projectId=' + ${project.projectId}}" method="post">
-    <button type="submit" class="btn btn-danger" onclick="return confirm('Advarsel! Dette er en permanent handling og projektet slettes permanent fra databasen!')">Slet projektet</button>
-</form>
-<br>
-<h4 th:if="${subprojects.isEmpty()}" th:text="'Ingen delprojekter fundet for '+ ${project.projectName}"></h4>
-<br>
-<p th:text="${project.description}"></p>
-<br>
-
-<div class="project-container">
-<div th:if="${subprojects != null}" th:each="subProject : ${subprojects}" class="item-list">
-    <h2 th:text="${subProject.projectName}"></h2>
-    <a th:href="@{'/oversigt/' + ${subProject.projectName} + '/opgaver'+'?subProjectId=' + ${subProject.projectId} + '&userRole=' + ${subProject.userRole} + '&archived='+${project.isArchived()}}" class="view-subproject-btn">Se delprojekt!</a>
-
-    <p th:text="${subProject.hours}"></p>
-
-</div>
+    <div class="project-actions" th:if="${project != null && !project.isArchived() &&  #strings.equalsIgnoreCase(role, 'projektleder')}">
+        <a th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projekt/' + ${project.projectId} +'?projectId=' + ${project.projectId}}" class="action-btn">Rediger projekt</a>
+        <a th:href="@{'/oversigt/' + ${project.projectName} + '/rediger_projektgruppe' +'?projectId=' + ${project.projectId}}" class="action-btn">Rediger projektgruppens medlemmer</a>
+        <a th:href="@{'/oversigt/' + ${project.projectName} + '/opret_delprojekt' +'?projectName=' + ${project.projectName} +'&parentProjectId=' + ${project.projectId}}" class="action-btn">Tilføj delprojekt</a>
+    </div>
+    <form th:if="${#strings.equalsIgnoreCase(role, 'projektleder')}" th:action="@{/oversigt/arkiver_projekt}" method="post" class="inline-form">
+        <input type="hidden" name="projectId" th:value="${project.projectId}" />
+        <input type="hidden" name="isArchived" th:value="${project.isArchived ? false : true}" />
+        <button type="submit" class="action-btn" th:text="${project.isArchived} ? 'Flyt til aktuelle projekter' : 'Arkiver projekt'"></button>
+    </form>
+    <form th:if="${project != null && project.isArchived() &&  #strings.equalsIgnoreCase(role, 'projektleder')}" th:action="@{'/oversigt/slet_projekt/' + ${project.projectName} +'?projectId=' + ${project.projectId}}" method="post" class="inline-form">
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Advarsel! Dette er en permanent handling og projektet slettes permanent fra databasen!')">Slet projektet</button>
+    </form>
+    <h4 th:if="${subprojects.isEmpty()}" th:text="'Ingen delprojekter fundet for '+ ${project.projectName}"></h4>
+    <p th:text="${project.description}"></p>
+    <h2 class="section-title">Dine delprojekter:</h2>
+    <div class="project-container">
+        <div th:if="${subprojects != null}" th:each="subProject : ${subprojects}" class="item-list">
+            <h2 th:text="${subProject.projectName}"></h2>
+            <a th:href="@{'/oversigt/' + ${subProject.projectName} + '/opgaver'+'?subProjectId=' + ${subProject.projectId} + '&userRole=' + ${subProject.userRole} + '&archived='+${project.isArchived()}}" class="view-subproject-btn">Se delprojekt!</a>
+            <p th:text="${subProject.hours}"></p>
+        </div>
+    </div>
 </div>
 </body>
 </html>
