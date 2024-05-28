@@ -1,0 +1,53 @@
+-- SQL INSERT SCRIPTS --
+INSERT INTO UserRole (RoleTitle) VALUES
+('Observatør'),
+('Projektleder'),
+('Udvikler');
+INSERT INTO User (UserLogin, Username, UserPassword, Email, Location, isAdmin, isProjectLead) VALUES
+('Klpe01','Klaus Petersen', 'pw1', 'klaus@alpha-solutions.com', 'København', true, false),
+('Koak01','Kodjo Akator', 'pw2', 'koak@alpha-solutions.com', 'København', false, true),
+('Alco01','Almer Coskun', 'pw3', 'almertoro@alpha-solutions.com', 'København', false, true),
+('Klpe02','Klara Persson', 'pw4', 'abc@alpha-solutions.com', 'Oslo', false, false),
+('Alco02','Allan Cole', 'pw5', 'def@alpha-solutions.com', 'New Jersey', false, true),
+('Koak02','Kolten Akerman', 'pw6', 'ghi@alpha-solutions.com', 'Dallas', false, false),
+('Chni01','Christopher Nielsen', 'pw7', 'jkl@alpha-solutions.com', 'Los Angeles', true, false),
+('admin','Admin', 'admin', 'admin@alpha-solutions.com', 'København', true, false);
+INSERT INTO Project (ProjectName, Deadline, Description, Hours) VALUES
+('Project1', '2024-06-19', 'Lorem ipsum dolor sit amet', 0),
+('Project2', '2024-05-15', 'Lorem ipsum dolor sit amet', 0),
+('Project3', '2024-05-29', 'Lorem ipsum dolor sit amet', 0);
+INSERT INTO Subproject (SubprojectName, Description, Hours) VALUES
+('Subproject1', 'Lorem ipsum dolor sit amet', 0),
+('Subproject2', 'Lorem ipsum dolor sit amet', 0),
+('Subproject3', 'Lorem ipsum dolor sit amet', 0);
+INSERT INTO Task (TaskName, Description, Hours) VALUES
+('Task1', 'Lorem ipsum dolor sit amet', 10),
+('Task2', 'Lorem ipsum dolor sit amet', 15),
+('Task3', 'Lorem ipsum dolor sit amet', 02),
+('Task4', 'Lorem ipsum dolor sit amet', 08),
+('Task5', 'Lorem ipsum dolor sit amet', 04),
+('Task6', 'Lorem ipsum dolor sit amet', 07);
+INSERT INTO User_Project_Role (UserId, ProjectId, RoleId) VALUES
+(1,1,1),
+(1,2,1),
+(1,3,1),
+
+(2,1,2),
+(2,2,2),
+(2,3,3),
+
+(3,1,3),
+(3,2,3),
+(3,3,2);
+
+INSERT INTO Project_Subproject (ProjectId, SubprojectId) VALUES
+(1,1),
+(1,2),
+(1,3);
+INSERT INTO Subproject_Task (SubprojectId, TaskId) VALUES
+(1, 1),
+(1, 2),
+(1, 3),
+(2, 4),
+(2, 5),
+(3, 6);

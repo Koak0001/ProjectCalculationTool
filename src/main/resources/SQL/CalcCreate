@@ -1,0 +1,68 @@
+-- SQL CREATE SCRIPTS --
+
+DROP DATABASE IF EXISTS projecttooldb;
+CREATE DATABASE projecttooldb;
+USE projecttooldb;
+
+CREATE TABLE IF NOT EXISTS User (
+	UserLogin VARCHAR(10) NOT NULL UNIQUE,
+    UserId INT NOT NULL AUTO_INCREMENT,
+    UserName VARCHAR(50) NOT NULL,
+    UserPassword VARCHAR(50) NOT NULL,
+    isAdmin boolean default false,
+    isProjectLead boolean default false,
+    Email VARCHAR(50),
+    Location VARCHAR(25),
+    PRIMARY KEY (UserId)
+);
+CREATE TABLE IF NOT EXISTS Project (
+    ProjectId INT NOT NULL AUTO_INCREMENT,
+    ProjectName VARCHAR(50) NOT NULL,
+    Description TEXT NOT NULL,
+    Deadline DATE,
+    isArchived boolean default false,
+    Hours INT,
+    PRIMARY KEY (ProjectId)
+);
+CREATE TABLE IF NOT EXISTS Subproject (
+    SubprojectId INT NOT NULL AUTO_INCREMENT,
+    SubprojectName VARCHAR(50) NOT NULL,
+    Description TEXT NOT NULL,
+    Hours INT,
+    PRIMARY KEY (SubprojectId)
+);
+CREATE TABLE IF NOT EXISTS Task (
+    TaskId INT NOT NULL AUTO_INCREMENT,
+    TaskName VARCHAR(50) NOT NULL,
+    Description TEXT NOT NULL,
+    Hours INT NOT NULL DEFAULT 0,
+    PRIMARY KEY (TaskId)
+);
+CREATE TABLE IF NOT EXISTS UserRole (
+    RoleId INT NOT NULL AUTO_INCREMENT,
+    RoleTitle VARCHAR(25) NOT NULL,
+    PRIMARY KEY (RoleId)
+);
+CREATE TABLE IF NOT EXISTS User_Project_Role (
+    UserId INT NOT NULL,
+    ProjectId INT NOT NULL,
+    RoleID INT NOT NULL,
+    FOREIGN KEY (UserId) REFERENCES User(UserId),
+    FOREIGN KEY (ProjectId) REFERENCES Project(ProjectId),
+    FOREIGN KEY (RoleId) REFERENCES UserRole(RoleId),
+    PRIMARY KEY (UserId, ProjectId)
+);
+CREATE TABLE IF NOT EXISTS Project_Subproject (
+    ProjectId INT NOT NULL,
+    SubprojectId INT NOT NULL,
+    FOREIGN KEY (ProjectId) REFERENCES Project(ProjectId),
+    FOREIGN KEY (SubprojectId) REFERENCES Subproject(SubprojectId),
+    PRIMARY KEY (ProjectId, SubprojectId)
+);
+CREATE TABLE IF NOT EXISTS Subproject_Task (
+    SubprojectId INT NOT NULL,
+    TaskId INT NOT NULL,
+    FOREIGN KEY (SubprojectId) REFERENCES Subproject(SubprojectId),
+    FOREIGN KEY (TaskId) REFERENCES Task(TaskId),
+    PRIMARY KEY (SubprojectId, TaskId)
+);
