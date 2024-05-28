@@ -544,15 +544,15 @@ input[type="submit"] {
     transition-duration: 0.4s;
 }
 
-.new-btn:hover, .project-button:hover, .view-subproject-btn:hover, .action-btn:hover, .btn-danger:hover {
+.new-btn:hover, .view-subproject-btn:hover, .action-btn:hover {
     background-color: #559ecd;
 }
 
-.btn-danger {
+.btn-danger, .btn-danger2 {
     background-color: #f66;
 }
 
-.btn-danger:hover {
+.btn-danger:hover, .btn-danger2:hover {
     background-color: #d44;
 }
 

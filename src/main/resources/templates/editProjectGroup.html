@@ -37,7 +37,7 @@
             <td></td>
             <td>
                 <form th:action="@{'/oversigt/' + ${project.projectName} + '/fjern_bruger' + '?userId=' + ${user.userId} + '&projectId=' + ${project.projectId} + '&roleId=' + ${user.roleId}}" method="post" class="inline-form">
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('Fjern bruger fra projektgruppen?')">Fjern fra projektgruppen</button>
+                    <button type="submit" class="action-btn" onclick="return confirm('Fjern bruger fra projektgruppen?')">Fjern fra projektgruppen</button>
                 </form>
             </td>
         </tr>

@@ -8,6 +8,9 @@
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="container">
+    <div class="task-actions" th:if="${!archived}">
+        <a class="action-btn" th:if="${#strings.equalsIgnoreCase(role, 'projektleder') || #strings.equalsIgnoreCase(role, 'udvikler')}" th:href="@{'/oversigt/' + ${taskName} + '/rediger_opgave/' + ${task.taskId} + '?taskId=' + ${task.taskId}}">Rediger opgave</a>
+    </div>
     <h4 class="task-title" th:text="${taskName}"></h4>
     <div class="task-details">
         <h2 class="task-role" th:text="'Din rolle er ' + ${role}"></h2>
@@ -15,9 +18,7 @@
         <p th:text="${task.description}"></p>
         <p class="task-hours" th:text="'Forventes afsluttet efter ' + ${task.hours} + ' arbejdstimer.'"></p>
     </div>
-    <div class="task-actions" th:if="${!archived}">
-        <a class="action-btn" th:if="${#strings.equalsIgnoreCase(role, 'projektleder') || #strings.equalsIgnoreCase(role, 'udvikler')}" th:href="@{'/oversigt/' + ${taskName} + '/rediger_opgave/' + ${task.taskId} + '?taskId=' + ${task.taskId}}">Rediger opgave</a>
-    </div>
+
     <form th:if="${#strings.equalsIgnoreCase(role, 'projektleder') || #strings.equalsIgnoreCase(role, 'udvikler')}" th:action="@{'/oversigt/slet_opgave/' + ${taskName} +'?taskId=' + ${task.taskId}}" method="post" class="inline-form">
         <button type="submit" class="btn btn-danger" onclick="return confirm('Advarsel! Dette er en permanent handling og opgaven slettes permanent fra databasen!')">Slet opgaven</button>
     </form>
