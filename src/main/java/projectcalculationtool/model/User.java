@@ -2,7 +2,6 @@ package projectcalculationtool.model;
 
 public class User {
     private String userLogin;
-    private String name;
     private String email;
     private String location;
     private String projectRole;
@@ -23,7 +22,6 @@ public class User {
 
     }
 
-    public String getName() {return name;}
     public String getUserName() {return userName;}
     public String getEmail() {return email;}
     public String getLocation() {return location;}
@@ -38,7 +36,6 @@ public class User {
 
     public int getUserId() {return userId;}
 
-    public void setName(String name) {this.name = name;}
     public void setUserName(String userName) {this.userName = userName;}
     public void setEmail(String email) {this.email = email;}
     public void setLocation(String location) {this.location = location;}
