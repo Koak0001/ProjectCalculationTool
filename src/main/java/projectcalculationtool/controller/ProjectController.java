@@ -172,12 +172,12 @@ public class ProjectController {
     public String showProjectForm(Model model, HttpServletRequest request) {
         User user = getLoggedInUser(request);
         if (user == null){
-            return "redirect:/";
-        } else {
+            return "redirect:/";}
+        else {
+        if (user.isProjectLead()) {
             model.addAttribute("project", new Project(""));
-            if (projectService.getLoggedInUser(request).isProjectLead()) {
-                return "new_project";
-            } else return "no_permission";}
+             return "new_project";}
+        else return "no_permission";}
     }
 
     @PostMapping("/nytprojekt")
@@ -246,7 +246,8 @@ public class ProjectController {
 
     @GetMapping("/{subProjectName}/opret_opgave")
     public String showTaskForm(@RequestParam int parentProjectId,
-                               @PathVariable String subProjectName, Model model, HttpServletRequest request) {
+                               @PathVariable String subProjectName,
+                               Model model, HttpServletRequest request) {
         User user = getLoggedInUser(request);
         if (user == null) {return "redirect:/";}
         else {
@@ -409,11 +410,13 @@ public class ProjectController {
 
     @PostMapping("/slet_bruger/{userName}")
     public String deleteUser(@RequestParam int userId, HttpServletRequest request) {
-        if (projectService.getLoggedInUser(request).isAdmin()) {
-            projectService.deleteUser(userId);
-            return "redirect:/oversigt/administrator";
-        } else {
+        User user = getLoggedInUser(request);
+        if (user == null) {
+            return "redirect:/";
+        } else if (!user.isAdmin()) {
             return "no_permission";
+        } else {projectService.deleteUser(userId);
+            return "redirect:/oversigt/administrator";
         }
     }
     @GetMapping("/administrator/opret_bruger")
