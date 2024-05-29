@@ -6,7 +6,7 @@ Its purpose is in the name, it allows you to set up projectgroups, list deadline
 
 
 ### BE AWARE, FOR SOME REASON THE SITE DOESN'T MATCH THE LATEST VERSION,
-### SEVERAL UPDATES ARE INEXPLICABlY NOT INCLUDED!
+### SEVERAL UPDATES ARE INEXPLICABLY NOT INCLUDED!
 
 Link here https://alphasolutionsak.azurewebsites.net/
 You'll need the passwords though!
