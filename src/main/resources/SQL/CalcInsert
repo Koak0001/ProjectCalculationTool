@@ -13,20 +13,20 @@ INSERT INTO User (UserLogin, Username, UserPassword, Email, Location, isAdmin, i
 ('Chni01','Christopher Nielsen', 'pw7', 'jkl@alpha-solutions.com', 'Los Angeles', true, false),
 ('admin','Admin', 'admin', 'admin@alpha-solutions.com', 'København', true, false);
 INSERT INTO Project (ProjectName, Deadline, Description, Hours) VALUES
-('Project1', '2024-06-19', 'Lorem ipsum dolor sit amet', 0),
-('Project2', '2024-05-15', 'Lorem ipsum dolor sit amet', 0),
-('Project3', '2024-05-29', 'Lorem ipsum dolor sit amet', 0);
+('Projekt1', '2024-06-19', 'Lorem ipsum dolor sit amet', 0),
+('Projekt2', '2024-05-15', 'Lorem ipsum dolor sit amet', 0),
+('Projekt3', '2024-05-29', 'Lorem ipsum dolor sit amet', 0);
 INSERT INTO Subproject (SubprojectName, Description, Hours) VALUES
-('Subproject1', 'Lorem ipsum dolor sit amet', 0),
-('Subproject2', 'Lorem ipsum dolor sit amet', 0),
-('Subproject3', 'Lorem ipsum dolor sit amet', 0);
+('Delprojekt1', 'Lorem ipsum dolor sit amet', 0),
+('Delprojekt2', 'Lorem ipsum dolor sit amet', 0),
+('Delprojekt3', 'Lorem ipsum dolor sit amet', 0);
 INSERT INTO Task (TaskName, Description, Hours) VALUES
-('Task1', 'Lorem ipsum dolor sit amet', 10),
-('Task2', 'Lorem ipsum dolor sit amet', 15),
-('Task3', 'Lorem ipsum dolor sit amet', 02),
-('Task4', 'Lorem ipsum dolor sit amet', 08),
-('Task5', 'Lorem ipsum dolor sit amet', 04),
-('Task6', 'Lorem ipsum dolor sit amet', 07);
+('Opgave1', 'Lorem ipsum dolor sit amet', 10),
+('Opgave2', 'Lorem ipsum dolor sit amet', 15),
+('Opgave3', 'Lorem ipsum dolor sit amet', 02),
+('Opgave4', 'Lorem ipsum dolor sit amet', 08),
+('Opgave5', 'Lorem ipsum dolor sit amet', 04),
+('Opgave6', 'Lorem ipsum dolor sit amet', 07);
 INSERT INTO User_Project_Role (UserId, ProjectId, RoleId) VALUES
 (1,1,1),
 (1,2,1),
