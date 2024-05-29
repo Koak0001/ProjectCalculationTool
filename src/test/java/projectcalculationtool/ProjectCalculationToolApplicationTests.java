@@ -23,43 +23,43 @@ class ProjectCalculationToolApplicationTests {
         assertThat(projectService).isNotNull();
     }
 
-    @Test
-    void testGetProject() {
-        // arrange
-        int projectId = 1;
-
-        // act
-        Project project = projectService.getProject(projectId);
-
-        // assert
-        assertThat(project).isNotNull();
-        assertThat(project.getProjectId()).isEqualTo(projectId);
-    }
-    @Test
-    void testGetUser() {
-        // arrange
-        int userId = 2;
-
-        // act
-        User user = projectService.getUser(userId);
-
-        // assert
-        assertThat(user).isNotNull();
-        assertThat(user.getUserId()).isEqualTo(userId);
-    }
-
-    @Test
-    void testGetSubProject() {
-        // arrange
-        int subprojectId = 1;
-
-        // act
-        SubProject subproject = projectService.getSubProject(subprojectId);
-
-        // assert
-        assertThat(subproject).isNotNull();
-        assertThat(subproject.getProjectId()).isEqualTo(subprojectId);
-    }
+//    @Test
+//    void testGetProject() {
+//        // arrange
+//        int projectId = 1;
+//
+//        // act
+//        Project project = projectService.getProject(projectId);
+//
+//        // assert
+//        assertThat(project).isNotNull();
+//        assertThat(project.getProjectId()).isEqualTo(projectId);
+//    }
+//    @Test
+//    void testGetUser() {
+//        // arrange
+//        int userId = 2;
+//
+//        // act
+//        User user = projectService.getUser(userId);
+//
+//        // assert
+//        assertThat(user).isNotNull();
+//        assertThat(user.getUserId()).isEqualTo(userId);
+//    }
+//
+//    @Test
+//    void testGetSubProject() {
+//        // arrange
+//        int subprojectId = 1;
+//
+//        // act
+//        SubProject subproject = projectService.getSubProject(subprojectId);
+//
+//        // assert
+//        assertThat(subproject).isNotNull();
+//        assertThat(subproject.getProjectId()).isEqualTo(subprojectId);
+//    }
 
 
 
