@@ -1,0 +1,36 @@
+-- tests
+-- Hent alle projekter en bruger er tilknyttet, og deres rolle deri
+SELECT P.*, R.RoleTitle
+FROM User_Project_Role UPR
+JOIN Project P ON UPR.ProjectId = P.ProjectId
+JOIN UserRole R ON UPR.RoleId = R.RoleId
+WHERE UPR.UserId = 3;
+
+-- total time antal for delprojekt baseret på dets tilknyttede opgaver
+SELECT SUM(T.Hours) AS TotalHours
+FROM Subproject_Task ST
+JOIN Task T ON ST.TaskId = T.TaskId
+WHERE ST.SubProjectId = 3;
+
+-- total time antal for projekt baseret på dets tilknyttede delprojekter
+SELECT SUM(T.Hours) AS TotalHours
+FROM Subproject_Task ST
+JOIN Task T ON ST.TaskId = T.TaskId
+JOIN Project_Subproject PS ON ST.SubProjectId = PS.SubProjectId
+WHERE PS.ProjectId = 1;
+
+-- hent brugere projektgruppen
+SELECT u.*, ur.*
+FROM User u
+JOIN User_Project_Role upr ON u.UserId = upr.UserId
+JOIN UserRole ur ON upr.RoleId = ur.RoleId
+WHERE upr.ProjectId = 1;
+
+-- hent brugere ikke i projektgruppen, men ekskluder 'admin'
+SELECT * FROM User u WHERE u.UserName
+<> 'admin' AND NOT EXISTS
+(SELECT 1 FROM User_Project_Role upr
+WHERE upr.UserId = u.UserId AND upr.ProjectId = 1);
+
+-- find et login med et tilgængeligt numerisk suffix (undermetode i vores UserLogin generator)
+SELECT COUNT(*) FROM User WHERE UserLogin = 'Koak'

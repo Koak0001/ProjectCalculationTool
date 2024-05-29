@@ -23,15 +23,6 @@ public class ProjectRepository {
     @Value("${spring.datasource.password}")
     String dbPassword;
 
-    public User getLoggedInUser(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            return (User) session.getAttribute("loggedInUser");
-        }
-        return null;
-    }
-
-
     public List<Project> getProjects(int userId, boolean archived) {
         List<Project> projects = new ArrayList<>();
         String sql = "SELECT P.*, R.RoleTitle " +
@@ -587,7 +578,8 @@ public class ProjectRepository {
     public List<User> getAvailableUsers(int projectId) {
         List<User> availableUsers = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
-            String sql = "SELECT * FROM User u WHERE u.UserName <> 'admin' AND NOT EXISTS (SELECT 1 FROM User_Project_Role upr " +
+            String sql = "SELECT * FROM User u WHERE u.UserName " +
+                    "<> 'admin' AND NOT EXISTS (SELECT 1 FROM User_Project_Role upr " +
                     "WHERE upr.UserId = u.UserId AND upr.ProjectId = ?)";
             PreparedStatement psts = con.prepareStatement(sql);
             psts.setInt(1, projectId);
@@ -808,7 +800,6 @@ public class ProjectRepository {
     public void adminInsertIntoProject(int projectId, int userId){
         try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
             insertUserProjectRole(con, userId, projectId, 2);
-
         } catch (SQLException e) {
             System.out.println("Failed to insert admin");
             throw new RuntimeException(e);

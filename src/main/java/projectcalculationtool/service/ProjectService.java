@@ -1,5 +1,4 @@
 package projectcalculationtool.service;
-import jakarta.servlet.http.HttpServletRequest;
 import projectcalculationtool.model.User;
 import org.springframework.stereotype.Service;
 import projectcalculationtool.model.Project;
@@ -44,7 +43,6 @@ public class ProjectService {
     public void addUserToProject(int userId, int projectId, int roleId) {projectRepository.addUserToProject(userId, projectId, roleId);}
     public void updateCollaboratorRole(int projectId, int userId, int roleId) {projectRepository.updateCollaboratorRole(projectId, userId, roleId);}
     public void removeCollaborator(int userId, int projectId, int roleId) {projectRepository.removeCollaborator(userId,projectId,roleId);}
-    public User getLoggedInUser(HttpServletRequest request) {return projectRepository.getLoggedInUser(request);}
     public User getUser(int userId) {return projectRepository.getUser(userId);}
     public List<User> getAvailableUsers(int projectId) {return projectRepository.getAvailableUsers(projectId);}
     public List<User> getAssociatedUsers(int projectId) {return projectRepository.getAssociatedUsers(projectId);}
@@ -52,7 +50,7 @@ public class ProjectService {
     // Admin calls and functionality
     public List<User> getUsers() {return projectRepository.getUsers();}
     public List<Project> adminGetProjects(int adminUserId) {return projectRepository.adminGetProjects(adminUserId);}
-    public void adminInsertIntoProject(int projectId, int userId){projectRepository.adminInsertIntoProject(projectId, userId); ;}
+    public void adminInsertIntoProject(int projectId, int userId){projectRepository.adminInsertIntoProject(projectId, userId);}
     public void createUser(User user) {projectRepository.createUser(user);}
     public void updateUser(User user) {projectRepository.updateUser(user);}
     public void deleteUser(int userId) {projectRepository.deleteUser(userId);}
