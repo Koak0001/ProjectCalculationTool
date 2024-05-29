@@ -426,7 +426,11 @@ select:focus {
     text-decoration: none;
 }
 
-
+.site-header .home-link h1 {
+    color: var(--text-color);
+    font-family: 'Your font family';
+    margin: 0;
+}
 
 .site-header {
     display: flex;

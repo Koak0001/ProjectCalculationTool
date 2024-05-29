@@ -408,6 +408,7 @@ public class ProjectController {
         }
     }
 
+
     @GetMapping("/rediger_bruger/{userId}")
     public String showUpdateUserForm(@PathVariable int userId, Model model, HttpServletRequest request) {
         User user = getLoggedInUser(request);
@@ -475,9 +476,6 @@ public class ProjectController {
         projectService.adminInsertIntoProject(projectId, userId);
         return "redirect:/oversigt/administrator";
     }
-
-
-
 }
 
 

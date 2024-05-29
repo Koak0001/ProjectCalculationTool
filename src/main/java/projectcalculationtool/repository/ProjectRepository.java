@@ -23,6 +23,15 @@ public class ProjectRepository {
     @Value("${spring.datasource.password}")
     String dbPassword;
 
+    public User getLoggedInUser(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            return (User) session.getAttribute("loggedInUser");
+        }
+        return null;
+    }
+
+
     public List<Project> getProjects(int userId, boolean archived) {
         List<Project> projects = new ArrayList<>();
         String sql = "SELECT P.*, R.RoleTitle " +
