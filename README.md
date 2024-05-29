@@ -4,8 +4,11 @@ ProjectCalculationTool is a web application built using Java, Maven, Spring Boot
 
 Its purpose is in the name, it allows you to set up projectgroups, list deadlines, and see the expected hours of work required, by combing all the tasks in an given project.
 
-Link here https://alphasolutionsak.azurewebsites.net/
 
+### BE AWARE, FOR SOME REASON THE SITE DOESN'T MATCH THE LATEST VERSION,
+### SEVERAL UPDATES ARE INEXPLICABlY NOT INCLUDED!
+
+Link here https://alphasolutionsak.azurewebsites.net/
 You'll need the passwords though!
 
 ## Requirements
