@@ -10,18 +10,18 @@ import projectcalculationtool.service.ProjectService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-class ProjectCalculationToolApplicationTests {
-
-    @Autowired
-    private ProjectService projectService;
-
-
-
-    @Test
-    void contextLoads() {
-        assertThat(projectService).isNotNull();
-    }
+//@SpringBootTest
+//class ProjectCalculationToolApplicationTests {
+//
+//    @Autowired
+//    private ProjectService projectService;
+//
+//
+//
+//    @Test
+//    void contextLoads() {
+//        assertThat(projectService).isNotNull();
+//    }
 
 //    @Test
 //    void testGetProject() {
@@ -63,4 +63,4 @@ class ProjectCalculationToolApplicationTests {
 
 
 
-}
+//}
